@@ -4,10 +4,10 @@
 #'@param data Dataset
 #'@param type The type of Simpson index you'd like to generate. Reciprocal is 1/Pa, Dominance is 1-Pa, Blank is just the Simpson Index
 #'
-#'@examples SDI("Unique Student Static", EnrolmentData, type = "reciprocal")
+#'@examples sdi("Unique Student Static", EnrolmentData, type = "reciprocal")
 #'
-#'@export SDI
-SDI <- function(col, data, type){
+#'@export sdi
+sdi <- function(col, data, type){
   data$number2 <- data[col]*(data[col]-1)
   Numer <- sum(data$number2)
   Denom <- sum(data[col])*(sum(data[col])-1)

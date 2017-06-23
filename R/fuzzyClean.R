@@ -7,10 +7,10 @@
 #'@param iterations Number of itereations the function will do. A smart idea is to tune the function with low distance and high iterations.
 #'
 #'@examples
-#' df$Vector2 <- fuzzy_clean(df$Vector1, 0.25, 5)
-#'@export fuzzy_clean
+#' df$Vector2 <- fuzzyClean(df$Vector1, 0.25, 5)
+#'@export fuzzyClean
 
-fuzzy_clean <- function(vector, distance, iterations){
+fuzzyClean <- function(vector, distance, iterations){
 
   if(missing(iterations)){
     iterations = 1
