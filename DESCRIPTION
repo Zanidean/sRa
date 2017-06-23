@@ -7,6 +7,7 @@ Authors@R: person("Alex", "Zanidean", email = "AZanidean@mhc.ab.ca",
                   role = c("aut","cre"))
 Maintainer: Alex Zanidean <azanidean@mhc.ab.ca>
 LazyData: TRUE
+License: MIT + file LICENSE
 Depends: data.table, tidyverse
 Imports:
     data.table,
