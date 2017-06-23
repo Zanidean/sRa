@@ -1,7 +1,7 @@
 Overview
 ---------
 
-sRa is a package
+sRa is a package designed to speed-up institutional research by providing set of generalized functions for common tasks:
 
 
 - ~~`xmR()`: Generates XMR data.~~ Not ready yet.
