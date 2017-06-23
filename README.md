@@ -15,7 +15,7 @@
 **round2**: This functions as you expect a rounding function to. R uses IEEE to round, which can make some differences in analysis.
 
 **stringFilter/stringSubset**: Filters/subsets a column based on a string.
-
+---
 For installation: 
 ``` R
 install.packages(devtools)
