@@ -10,7 +10,7 @@ sRa is a package designed to speed-up institutional research by providing set of
 
 - `fuzzyClean()`: Uses approximate string matching to fix typos and slight differences in vectors.
 
-- `sdi()`: Simpson Diversity Index Calculator
+- `sdi()`: Simpson Diversity Index calculator.
 
 - `foipR()`: For making sure your data is foip'd.
 
