@@ -18,7 +18,7 @@ sRa is a package designed to speed-up institutional research by providing set of
 
 - `round2()`: This functions as you expect a rounding function to. R uses IEEE to round, which can make some differences in analysis.
 
-- `stringFilter() / stringSubset()`: Filters/subsets a column based on a string.
+- `stringFilter() / stringSubset()`: Filters/Subsets a column based on a string.
 
 
 Installation
