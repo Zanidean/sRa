@@ -1,7 +1,7 @@
 # **sRa**
 
 For installation: 
-```{r}
+``` R
 install.packages(devtools)
 devtools::install_github("zanidean/sRa")
 ```
