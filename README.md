@@ -11,7 +11,7 @@ devtools::install_github("zanidean/sRa")
 
 **fuzzyClean**: Uses approximate string matching to fix typos and slight differences in vectors.
 
-**SDI**: Simpson Diversity Index Calculator
+**sdi**: Simpson Diversity Index Calculator
 
 **foipR**: For making sure your data is foip'd.
 
