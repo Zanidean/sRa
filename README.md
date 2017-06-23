@@ -1,22 +1,28 @@
-# **sRa**
+Overview
+---------
 
-~~**xmR**: Generates XMR data.~~ Not ready yet.
+sRa is a package
 
-**xmR_chart**: Takes the output from xmR and makes an XMR chart, mostly used for diagnostics.
 
-**fuzzyClean**: Uses approximate string matching to fix typos and slight differences in vectors.
+- ~~`xmR()`: Generates XMR data.~~ Not ready yet.
 
-**sdi**: Simpson Diversity Index Calculator
+- `xmR_chart()`: Takes the output from xmR and makes an XMR chart, mostly used for diagnostics.
 
-**foipR**: For making sure your data is foip'd.
+- `fuzzyClean()`: Uses approximate string matching to fix typos and slight differences in vectors.
 
-**columnCollapse**: Uniting two columns of similar data.
+- `sdi()`: Simpson Diversity Index Calculator
 
-**round2**: This functions as you expect a rounding function to. R uses IEEE to round, which can make some differences in analysis.
+- `foipR()`: For making sure your data is foip'd.
 
-**stringFilter/stringSubset**: Filters/subsets a column based on a string.
----
-For installation: 
+- `columnCollapse()`: Uniting two columns of similar data.
+
+- `round2()`: This functions as you expect a rounding function to. R uses IEEE to round, which can make some differences in analysis.
+
+- `stringFilter() / stringSubset()`: Filters/subsets a column based on a string.
+
+
+Installation
+------------
 ``` R
 install.packages(devtools)
 devtools::install_github("zanidean/sRa")
