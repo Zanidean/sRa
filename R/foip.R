@@ -4,10 +4,10 @@
 #'@param dataframe data to be foiped
 
 #'
-#'@examples foipR(program, survey)
+#'@examples foip(program, survey)
 #'
-#'@export foipR
-foipR <- function(column, dataframe){
+#'@export foip
+foip <- function(column, dataframe){
   df <- dataframe
   dfsum <- dplyr::select_(dataframe, as.name(column))
   dfsum <- as.data.frame(table(dfsum[[column]]), responseName="Count")

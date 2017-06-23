@@ -12,7 +12,7 @@ sRa is a package designed to speed-up institutional research by providing set of
 
 - `sdi()`: Simpson Diversity Index calculator.
 
-- `foipR()`: For making sure your data is foip'd.
+- `foip()`: For making sure your data is foip'd.
 
 - `columnCollapse()`: Uniting two columns of similar data.
 
