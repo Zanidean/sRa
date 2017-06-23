@@ -1,0 +1,14 @@
+Package: sRa
+Type: Package
+Title: Functions for improving the life of a research analyst.
+Version: 1.7.0
+Date: 2017-06-23
+Authors@R: person("Alex", "Zanidean", email = "AZanidean@mhc.ab.ca",
+                  role = c("aut","cre"))
+Maintainer: Alex Zanidean <azanidean@mhc.ab.ca>
+LazyData: TRUE
+Depends: data.table, tidyverse
+Imports:
+    data.table,
+    tidyverse
+RoxygenNote: 6.0.1
