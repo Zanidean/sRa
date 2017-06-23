@@ -6,7 +6,7 @@
 #'@param measure The column containing the measure. Must be in numeric format.
 #'@param interval The interval you'd like to use to calculate the averages. Defaults to 5.
 #'@examples dat.xmr <- xmR(dat, "Measure", 5)
-#'dat.xmr <- dat %>% group_by(., Program, Variable) %>% do(xmR2(., "Measure"))
+#'dat.xmr <- dat %>% group_by(., Program, Variable) %>% do(xmR(., "Measure"))
 #'
 #'@export xmR
 xmR <- function(df, measure, interval) {
