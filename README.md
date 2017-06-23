@@ -17,6 +17,6 @@ devtools::install_github("zanidean/sRa")
 
 **columnCollapse**: Uniting two columns of similar data.
 
-**round2**: R used IEEE floating point to round, which can make some differences in analysis. This functions as you expect a rounding function to. 
+**round2**: This functions as you expect a rounding function to. R uses IEEE to round, which can make some differences in analysis.
 
 **stringFilter/stringSubset**: Filters/subsets a column based on a string.
