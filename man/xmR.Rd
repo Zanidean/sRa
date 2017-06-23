@@ -19,6 +19,6 @@ Will be used to calculate XMR data.
 }
 \examples{
 dat.xmr <- xmR(dat, "Measure", 5)
-dat.xmr <- dat \%>\% group_by(., Program, Variable) \%>\% do(xmR2(., "Measure"))
+dat.xmr <- dat \%>\% group_by(., Program, Variable) \%>\% do(xmR(., "Measure"))
 
 }
