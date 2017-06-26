@@ -14,7 +14,6 @@ sRa is a package designed to speed-up institutional research by providing a set 
 
 - `foip()`: For making sure your data is foip'd.
 
-
 Installation
 ------------
 ``` R
