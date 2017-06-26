@@ -14,14 +14,6 @@ sRa is a package designed to speed-up institutional research by providing a set 
 
 - `foip()`: For making sure your data is foip'd.
 
-- `columnCollapse()`: Uniting two columns of similar data.
-
-- `round2()`: This functions as you expect a rounding function to. R uses IEEE to round, which can make some differences in analysis.
-
-- `stringFilter() / stringSubset()`: Filters/Subsets a column based on a string.
-
-- `smry()`: Basic wrapper for summary(as.factor(x)).
-
 
 Installation
 ------------
