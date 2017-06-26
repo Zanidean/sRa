@@ -4,10 +4,12 @@
 \alias{xmR_chart}
 \title{Generate the XMR chart for XMR data}
 \usage{
-xmR_chart(dataframe, facetvar)
+xmR_chart(dataframe, time, measure, facetvar)
 }
 \arguments{
 \item{dataframe}{Output from xmR()}
+
+\item{measure}{Measure}
 
 \item{facetvar}{The column containing the factor you'd like to facet on.}
 }
@@ -16,6 +18,9 @@ Useful for generating the static XMR data for XMR charts. Output can be piped in
 }
 \examples{
 dat.xmr <- xmR(dat, "Measure", 5)
-dat.xmr <- dat \%>\% group_by(., Program, Variable) \%>\% do(xmR(., "Measure")) \%>\% do(xmR_Chart(., "Variable"))
+dat.xmr <- dat \%>\% 
+            group_by(., Program, Variable) \%>\% 
+            do(xmR(., "Measure")) \%>\% 
+            do(xmR_Chart(., "Variable"))
 
 }

@@ -8,7 +8,9 @@
 #'@param recalc Logical if you'd like it to recalculate bounds. Defaults to False.
 
 #'@examples dat.xmr <- xmR(dat, "Measure", 5)
-#'dat.xmr <- dat %>% group_by(., Program, Variable) %>% do(xmR(., "Measure"))
+#'dat.xmr <- dat %>% 
+#'           group_by(., Program, Variable) %>% 
+#'           do(xmR(., measure = "Retention Rate", interval = 5, recalc = T))
 #'
 #'@export xmR
 xmR <- function(df, measure, interval, recalc) {
