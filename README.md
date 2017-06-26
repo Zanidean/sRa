@@ -3,8 +3,6 @@ Overview
 
 sRa is a package designed to speed-up institutional research by providing a set of generalized functions for common tasks:
 
-
-<<<<<<< HEAD
 - ~~`xmR()`: Generates XMR data.~~ Not ready just yet (Long runs work, although shortruns are a ways out).
 
 - `xmR_chart()`: Takes the output from xmR and makes an XMR chart, mostly used for diagnostics.
