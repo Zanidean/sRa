@@ -14,7 +14,8 @@
 #'
 #'@export xmR
 xmR <- function(df, measure, interval, recalc) {
-  #limits
+  
+  #limits calculator
   limits <- function(df){
     df$`Lower Natural Process Limit` <-
       df$`Central Line` - (df$`Average Moving Range` * 2.66)
@@ -30,16 +31,18 @@ xmR <- function(df, measure, interval, recalc) {
   }
   
   if (missing(interval)) {interval <- 5}
-  interval <- round2(interval, 0)
-  df$Order <- seq(1, nrow(df), 1)
-  
   if (missing(recalc)) {recalc = F}
   
+  interval <- round2(interval, 0)
+  df$Order <- seq(1, nrow(df), 1)
+
   if ((nrow(df)) >= interval) {
     
+    #if no recalculation of limits is desired
     if(recalc == F){
+    #calculating central line
     df$`Central Line` <- mean(df[[measure]][1:interval])
-    original_cnt <- mean(df[[measure]][1:interval])
+    original_cent <- mean(df[[measure]][1:interval])
     #moving range
     df$`Moving Range` <- NA
     for (i in 1:(nrow(df) - 1)) {
@@ -51,9 +54,12 @@ xmR <- function(df, measure, interval, recalc) {
     df <- limits(df)
     }
     
+    #if recalculation of limits desired
     if(recalc == T){
+      
+    #calculate inital values
       df$`Central Line` <- mean(df[[measure]][1:interval])
-      original_cnt <- mean(df[[measure]][1:interval])
+      original_cent <- mean(df[[measure]][1:interval])
       #moving range
       df$`Moving Range` <- NA
       for (i in 1:(nrow(df) - 1)) {
@@ -63,33 +69,82 @@ xmR <- function(df, measure, interval, recalc) {
       df$`Average Moving Range`[1] <- NA
       original_avg_mving_rng <- mean(df$`Average Moving Range`[1:interval], na.rm = T)
       df <- limits(df)
-    ###central line recalculate
-    #longrun - over
-      df_sub <- df %>%
-        filter(., .[[measure]] > `Central Line` & Order > interval) %>%
-        arrange(., Order)
-      if (nrow(df_sub) >= 8) {
-        df_sub <- df_sub %>%
-          mutate(., Num = Order - lead(Order, 1),
-                 Num = Num * -1) %>% 
-          filter(., Num == 1)
+      
+    
+    ###longrun - over
+        df_sub <- df %>%
+          filter(., .[[measure]] > `Central Line` & Order > interval) %>%
+          arrange(., Order)
+        
+        #credit to Marc Schwartz
+        breaks <- c(0, which(diff(df_sub$Order) != 1), length(df_sub$Order)) 
+        d <- sapply(seq(length(breaks) - 1), function(i) df_sub$Order[(breaks[i] + 1):breaks[i+1]]) 
+        rns <- c()
+        idx <- c()
+        for(i in 1:length(d)){
+          a <- length(d[[i]])
+          rns <- c(rns, a)
+          idx <- c(idx, i)
+        }
+        runs <- data.frame(idx, rns)
+        idx <- runs$idx[runs$rns == max(runs$rns)]
+        run <- d[[idx]]
+        df_sub <- df_sub[df_sub$Order %in% run,]
+        
+        print(df_sub)
         df_sub_length <- nrow(df_sub)
+        
         if (df_sub_length >= interval) {
           start <- min(df_sub$Order, na.rm = T)
           lastrow <- max(df_sub$Order, na.rm = T)
-          
           new_cnt <- mean(df_sub[[measure]][df_sub$Order %in% c(start:(start+4))], na.rm = T)
-          
           new_mv_rng <- df_sub$`Moving Range`
           new_mv_rng <- new_mv_rng[!is.na(new_mv_rng)]
           new_av_mv_rng <- new_mv_rng[2:length(new_mv_rng)]
           new_av_mv_rng <- mean(new_mv_rng)
           df$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
           df$`Central Line`[start:lastrow] <- new_cnt
-          print("Recalc Over")
+          print("Longrun: Over")
         }
-      }
         
+        
+        ###longrun - under
+        df_sub <- df %>%
+          filter(., .[[measure]] < `Central Line` & Order > interval) %>%
+          arrange(., Order)
+        
+        #credit to Marc Schwartz
+        breaks <- c(0, which(diff(df_sub$Order) != 1), length(df_sub$Order)) 
+        d <- sapply(seq(length(breaks) - 1), function(i) df_sub$Order[(breaks[i] + 1):breaks[i+1]]) 
+        rns <- c()
+        idx <- c()
+        for(i in 1:length(d)){
+          a <- length(d[[i]])
+          rns <- c(rns, a)
+          idx <- c(idx, i)
+        }
+        runs <- data.frame(idx, rns)
+        idx <- runs$idx[runs$rns == max(runs$rns)]
+        run <- d[[idx]]
+        df_sub <- df_sub[df_sub$Order %in% run,]
+        
+        print(df_sub)
+        df_sub_length <- nrow(df_sub)
+        
+        if (df_sub_length >= interval) {
+          start <- min(df_sub$Order, na.rm = T)
+          lastrow <- max(df_sub$Order, na.rm = T)
+          new_cnt <- mean(df_sub[[measure]][df_sub$Order %in% c(start:(start+4))], na.rm = T)
+          new_mv_rng <- df_sub$`Moving Range`
+          new_mv_rng <- new_mv_rng[!is.na(new_mv_rng)]
+          new_av_mv_rng <- new_mv_rng[2:length(new_mv_rng)]
+          new_av_mv_rng <- mean(new_mv_rng)
+          df$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
+          df$`Central Line`[start:lastrow] <- new_cnt
+          print("Longrun: Under")
+        }      
+      
+
         df$`Central Line`[(nrow(df)-3):nrow(df-3)] <- df$`Central Line`[(nrow(df)-4)]
         df$`Average Moving Range`[(nrow(df)-3):nrow(df-3)] <- df$`Average Moving Range`[(nrow(df)-4)]
         df <- limits(df)
