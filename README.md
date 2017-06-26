@@ -20,6 +20,8 @@ sRa is a package designed to speed-up institutional research by providing a set 
 
 - `stringFilter() / stringSubset()`: Filters/Subsets a column based on a string.
 
+- `smry()`: Basic wrapper for summary(as.factor(x)).
+
 
 Installation
 ------------
