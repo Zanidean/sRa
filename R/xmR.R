@@ -87,7 +87,9 @@ xmR <- function(df, measure, interval, recalc) {
         d <- sapply(seq(length(breaks) - 1), function(i) df_sub$Order[(breaks[i] + 1):breaks[i+1]]) 
         #print(d)
         
-        if(as.character(d[2]) == "NULL") {
+        if(as.character(d[2]) != "NULL") {
+          print("Breaks")
+          print(d)
           rns <- c()
           idx <- c()
           for(i in 1:length(d)){
@@ -97,18 +99,18 @@ xmR <- function(df, measure, interval, recalc) {
           }
           runs <- data.frame(idx, rns)
           idx <- runs$idx[runs$rns == max(runs$rns)]
-          print(idx)
+          #print(idx)
           run <- d[[idx]]
           df_sub <- df_sub[df_sub$Order %in% run,]
           
         } else {
-          #print(d[1])
-          run <- seq(d[1], max(df_sub$Order, na.rm=T),1)
-          print(run)
-          df_sub <- df_sub[df_sub$Order %in% run,]
+          print("No Breaks")
+          print(d[[1]])
+          #run <- seq(d[1], max(df_sub$Order, na.rm=T),1)
+          #df_sub <- df_sub[df_sub$Order %in% run,]
         }
         
-        print(df_sub)
+        #print(df_sub)
 
         df_sub_length <- nrow(df_sub)
         if (df_sub_length >= 8) {
