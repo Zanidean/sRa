@@ -82,14 +82,12 @@ xmR <- function(df, measure, interval, recalc) {
           arrange(., Order)
         #print(df_sub)
         
-        #credit to Marc Schwartz
+        #credit to Marc Schwartz for subsetting runs
         breaks <- c(0, which(diff(df_sub$Order) != 1), length(df_sub$Order)) 
         d <- sapply(seq(length(breaks) - 1), function(i) df_sub$Order[(breaks[i] + 1):breaks[i+1]]) 
         #print(d)
-        
+        if(is.matrix(d)){d <- split(d, rep(1:ncol(d), each = nrow(d)))}
         if(as.character(d[2]) != "NULL") {
-          print("Breaks")
-          print(d)
           rns <- c()
           idx <- c()
           for(i in 1:length(d)){
@@ -98,16 +96,17 @@ xmR <- function(df, measure, interval, recalc) {
             idx <- c(idx, i)
           }
           runs <- data.frame(idx, rns)
-          idx <- runs$idx[runs$rns == max(runs$rns)]
-          #print(idx)
-          run <- d[[idx]]
-          df_sub <- df_sub[df_sub$Order %in% run,]
+          idx <- unique(runs$idx[runs$rns == max(runs$rns)])
+          run <- d[idx]
+          print(run)
+          print(df_sub)
+          df_sub <- df_sub[df_sub$Order %in% run[[1]],]
           
         } else {
           print("No Breaks")
           print(d[[1]])
-          #run <- seq(d[1], max(df_sub$Order, na.rm=T),1)
-          #df_sub <- df_sub[df_sub$Order %in% run,]
+          run <- seq(d[1], max(df_sub$Order, na.rm=T),1)
+          df_sub <- df_sub[df_sub$Order %in% run,]
         }
         
         #print(df_sub)
@@ -115,7 +114,7 @@ xmR <- function(df, measure, interval, recalc) {
         df_sub_length <- nrow(df_sub)
         if (df_sub_length >= 8) {
           start <- min(df_sub$Order, na.rm = T)
-          lastrow <- max(df_sub$Order, na.rm = T)
+          lastrow <- max(df$Order, na.rm = T)
           new_cnt <- mean(df_sub[[measure]][df_sub$Order %in% c(start:(start+4))], na.rm = T)
           new_mv_rng <- df_sub$`Moving Range`
           new_mv_rng <- new_mv_rng[!is.na(new_mv_rng)]
@@ -125,9 +124,10 @@ xmR <- function(df, measure, interval, recalc) {
           df$`Central Line`[start:lastrow] <- new_cnt
           #points <- c(points, seq(start, max(df_sub$Order, na.rm = T), 1))
           #print(points)
-          print("Longrun: Over")
+          print("LR-O")
+          df <- limits(df)
         }
-        df <- limits(df)
+
         
         
         
