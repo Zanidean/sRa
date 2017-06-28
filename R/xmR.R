@@ -1,11 +1,14 @@
 #'Generate the XMR data for any time-series data. BUT DO NOT USE THIS
 #'@description Will be used to calculate XMR data.
 #'
-#'@param df The dataframe containing the time-series data. Must be in long format.
+#'@param df The dataframe containing the time-series data. 
+#'Must be in long format.
 #'At least 1 variable for time and one variable for measure.
 #'@param measure The column containing the measure. Must be in numeric format.
-#'@param interval The interval you'd like to use to calculate the averages. Defaults to 5.
-#'@param recalc Logical if you'd like it to recalculate bounds. Defaults to False.
+#'@param interval The interval you'd like to use to calculate the averages. 
+#'Defaults to 5.
+#'@param recalc Logical if you'd like it to recalculate bounds. 
+#'Defaults to False.
 
 #'@examples dat.xmr <- xmR(dat, "Measure", 5)
 #'dat.xmr <- dat %>% 
@@ -15,6 +18,27 @@
 #'@export xmR
 xmR <- function(df, measure, interval, recalc) {
   
+  if (missing(interval)) {interval <- 5}
+  if (missing(recalc)) {recalc = F}
+  interval <- round2(interval, 0)
+  df$Order <- seq(1, nrow(df), 1)
+  points <- seq(1,interval,1)
+  
+  
+  starter <- function(data){
+  data$`Central Line` <- mean(data[[measure]][1:interval])
+  original_cent <- mean(data[[measure]][1:interval])
+  #moving range
+  data$`Moving Range` <- NA
+  for (i in 1:(nrow(data) - 1)) {
+    data$`Moving Range`[i + 1] <- abs(data[[measure]][i] - data[[measure]][i + 1])
+  }
+  data$`Average Moving Range` <- mean(data$`Moving Range`[2:(1 + interval)])
+  data$`Average Moving Range`[1] <- NA
+  original_avg_mving_rng <- mean(data$`Average Moving Range`[1:interval], na.rm = T)
+  data <- limits(data)
+  return(data)
+  }
   
   #limits calculator
   limits <- function(df){
@@ -31,109 +55,83 @@ xmR <- function(df, measure, interval, recalc) {
     return(df)
   }
   
-  if (missing(interval)) {interval <- 5}
-  points <- seq(1, interval, 1)
+  #credit to Marc Schwartz for subsetting runs
+  run_subset <- function(subset, order){
+    breaks <- c(0, which(diff(subset[[order]]) != 1), length(subset[[order]])) 
+    d <- sapply(seq(length(breaks) - 1), function(i) subset[[order]][(breaks[i] + 1):breaks[i+1]]) 
+
+    if(is.matrix(d)){d <- split(d, rep(1:ncol(d), each = nrow(d)))}
+    #print(d)
+    if(length(d) > 1) {
+      rns <- c()
+      idx <- c()
+      for(i in 1:length(d)){
+        a <- length(d[[i]])
+        rns <- c(rns, a)
+        idx <- c(idx, i)
+      }
+      runs <- data.frame(idx, rns)
+      idx <- unique(runs$idx[runs$rns == max(runs$rns)])
+      run <- d[idx]
+      #print(run[[1]])
+      #print(subset)
+      subset <- subset[subset[[order]] %in% run[[1]],]
+    } else {
+      #print(d)
+      subset <- subset[subset[[order]] %in% d[[1]],]
+      #print(subset)
+    }
+  return(subset)
+  }
   
-  if (missing(recalc)) {recalc = F}
-  
-  interval <- round2(interval, 0)
-  df$Order <- seq(1, nrow(df), 1)
+  #recalculator
+  recalculator <- function(subset, order, length, message){
+    if (nrow(subset) >= length) {
+      start <- min(subset[[order]], na.rm = T)
+      end <- start+4
+      lastrow <- max(df$Order, na.rm = T)
+      new_cnt <- mean(subset[[measure]][1:5], na.rm = T)
+      new_mv_rng <- subset$`Moving Range`[1:5]
+      new_av_mv_rng <- mean(new_mv_rng)
+      print(new_av_mv_rng)
+      df$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
+      df$`Central Line`[start:lastrow] <- new_cnt
+      print(message)
+      df <- limits(df)
+      points <- c(points, c(start:end))
+      return(df)
+    } else {return(df)}
+  }
+
 
   if ((nrow(df)) >= interval) {
-    
     #if no recalculation of limits is desired
-    if(recalc == F){
-    #calculating central line
-    df$`Central Line` <- mean(df[[measure]][1:interval])
-    original_cent <- mean(df[[measure]][1:interval])
-    #moving range
-    df$`Moving Range` <- NA
-    for (i in 1:(nrow(df) - 1)) {
-      df$`Moving Range`[i + 1] <- abs(df[[measure]][i] - df[[measure]][i + 1])
-    }
-    df$`Average Moving Range` <- mean(df$`Moving Range`[2:(1 + interval)])
-    df$`Average Moving Range`[1] <- NA
-    original_avg_mving_rng <- mean(df$`Average Moving Range`[1:interval], na.rm = T)
-    df <- limits(df)
-    points <- c(points, seq(interval, nrow(df), 1))
-
-    }
+    if(recalc == F){df <- starter(df)}
     
     #if recalculation of limits desired
     if(recalc == T){
-      
     #calculate inital values
-      df$`Central Line` <- mean(df[[measure]][1:interval])
-      original_cent <- mean(df[[measure]][1:interval])
-      #moving range
-      df$`Moving Range` <- NA
-      for (i in 1:(nrow(df) - 1)) {
-        df$`Moving Range`[i + 1] <- abs(df[[measure]][i] - df[[measure]][i + 1])
-      }
-      df$`Average Moving Range` <- mean(df$`Moving Range`[2:(1 + interval)])
-      df$`Average Moving Range`[1] <- NA
-      original_avg_mving_rng <- mean(df$`Average Moving Range`[1:interval], na.rm = T)
-      df <- limits(df)
-      
-    
+    df <- starter(df)
+
     ###longrun - over
-        df_sub <- df %>%
-          filter(., .[[measure]] > `Central Line` & Order > interval) %>%
-          arrange(., Order)
-        #print(df_sub)
-        
-        #credit to Marc Schwartz for subsetting runs
-        breaks <- c(0, which(diff(df_sub$Order) != 1), length(df_sub$Order)) 
-        d <- sapply(seq(length(breaks) - 1), function(i) df_sub$Order[(breaks[i] + 1):breaks[i+1]]) 
-        #print(d)
-        if(is.matrix(d)){d <- split(d, rep(1:ncol(d), each = nrow(d)))}
-        if(as.character(d[2]) != "NULL") {
-          rns <- c()
-          idx <- c()
-          for(i in 1:length(d)){
-            a <- length(d[[i]])
-            rns <- c(rns, a)
-            idx <- c(idx, i)
-          }
-          runs <- data.frame(idx, rns)
-          idx <- unique(runs$idx[runs$rns == max(runs$rns)])
-          run <- d[idx]
-          print(run)
-          print(df_sub)
-          df_sub <- df_sub[df_sub$Order %in% run[[1]],]
-          
-        } else {
-          print("No Breaks")
-          print(d[[1]])
-          run <- seq(d[1], max(df_sub$Order, na.rm=T),1)
-          df_sub <- df_sub[df_sub$Order %in% run,]
-        }
-        
-        #print(df_sub)
+      df_sub <- df %>%
+        filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
+        arrange(., Order)
+      if(nrow(df_sub) >= 8){
+        df_sub <- run_subset(df_sub, "Order")
+        df <- recalculator(df_sub, "Order", 8, "Over")
+      }
 
-        df_sub_length <- nrow(df_sub)
-        if (df_sub_length >= 8) {
-          start <- min(df_sub$Order, na.rm = T)
-          lastrow <- max(df$Order, na.rm = T)
-          new_cnt <- mean(df_sub[[measure]][df_sub$Order %in% c(start:(start+4))], na.rm = T)
-          new_mv_rng <- df_sub$`Moving Range`
-          new_mv_rng <- new_mv_rng[!is.na(new_mv_rng)]
-          new_av_mv_rng <- new_mv_rng[2:length(new_mv_rng)]
-          new_av_mv_rng <- mean(new_mv_rng)
-          df$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
-          df$`Central Line`[start:lastrow] <- new_cnt
-          #points <- c(points, seq(start, max(df_sub$Order, na.rm = T), 1))
-          #print(points)
-          print("LR-O")
-          df <- limits(df)
-        }
 
+  
         
         
         
-        df$`Central Line`[(nrow(df)-3):nrow(df-3)] <- df$`Central Line`[(nrow(df)-4)]
-        df$`Average Moving Range`[(nrow(df)-3):nrow(df-3)] <- df$`Average Moving Range`[(nrow(df)-4)]
-        df <- limits(df)
+    df$`Central Line`[(nrow(df)-3):nrow(df-3)] <- 
+      df$`Central Line`[(nrow(df)-4)]
+    df$`Average Moving Range`[(nrow(df)-3):nrow(df-3)] <-
+      df$`Average Moving Range`[(nrow(df)-4)]
+    df <- limits(df)
     }
       
   }
