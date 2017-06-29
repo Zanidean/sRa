@@ -45,21 +45,23 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
   return(plot)
   } else {
       plot <- ggplot(dataframe,
-                   aes(time, group = dataframe[[facetvar]])) +
-      geom_line(aes(y = measure)) + 
-        geom_point(aes(y = measure, color = "#CF2A26")) +
-      geom_line(aes(y=`Central Line`), 
-                size=1, linetype = "dotted",na.rm = T) +
-      geom_line(aes(y=`Lower Natural Process Limit`, 
-                    color = "#7ECBB5"), 
-                size=1, linetype = "dashed",na.rm = T) +
-      geom_line(aes(y=`Upper Natural Process Limit`, 
-                    color = "#7ECBB5"), 
-                size=1, linetype = "dashed",na.rm = T) +
-      guides(colour=FALSE) + 
+                   aes(dataframe[[time]], group = dataframe[[facetvar]])) +
+        
+      geom_line(aes(y = dataframe[[measure]])) + 
+      geom_point(aes(y = dataframe[[measure]], 
+                       color = "#CF2A26")) +
+      geom_line(aes(y = `Central Line`), 
+                  size=1, linetype = "dotted",na.rm = T) +
+      geom_line(aes(y = `Lower Natural Process Limit`, 
+                      color = "#7ECBB5"), 
+                  size=1, linetype = "dashed",na.rm = T) +
+      geom_line(aes(y = `Upper Natural Process Limit`, 
+                      color = "#7ECBB5"), 
+                  size=1, linetype = "dashed",na.rm = T) +
+      guides(colour=FALSE) +  
       facet_wrap(~dataframe[[facetvar]], scales = "free") + 
-     labs(x = time, y = measure) +
-     whitetheme
+      labs(x = time, y = measure) +
+      whitetheme
   return(plot)
   }
 }

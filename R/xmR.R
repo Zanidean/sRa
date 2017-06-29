@@ -16,35 +16,31 @@
 #'           do(xmR(., measure = "Retention Rate", interval = 5, recalc = T))
 #'
 #'@export xmR
-xmR <- function(dataframe, measure, interval, recalc) {
+xmR <- function(df, measure, interval, recalc) {
   
   if (missing(interval)) {interval <- 5}
   if (missing(recalc)) {recalc = F}
-
-  df <- as.data.frame(dataframe, stringsAsFactors = F)
   interval <- round2(interval, 0)
   df$Order <- seq(1, nrow(df), 1)
-  
-  df[[measure]] <- as.numeric(as.character(df[[measure]]))
-  
   points <- seq(1,interval,1)
   
   #starting conditions
-  starter <- function(data){
-    data$`Central Line` <- mean(data[[measure]][1:interval])
-    original_cent <- mean(data[[measure]][1:interval])
+  starter <- function(dat){
+    original_cent <- mean(dat[[measure]][1:interval])
+    dat$`Central Line` <- original_cent
+    
     #moving range
-    data$`Moving Range` <- NA
-    for (i in 1:(nrow(data) - 1)) {
-      data$`Moving Range`[i + 1] <- abs(data[[measure]][i] - data[[measure]][i + 1])
+    dat$`Moving Range` <- abs(dat[[measure]] - lag(dat[[measure]], 1))
+    for (i in 1:(nrow(dat) - 1)) {
+      dat$`Moving Range`[i + 1] <- abs(dat[[measure]][i] - dat[[measure]][i + 1])
     }
-    data$`Average Moving Range` <- mean(data$`Moving Range`[2:(1 + interval)])
-    data$`Average Moving Range`[1] <- NA
-    original_avg_mving_rng <- mean(data$`Average Moving Range`[1:interval], na.rm = T)
-    data <- limits(data)
-    return(data)
+    dat$`Average Moving Range` <- mean(dat$`Moving Range`[2:(1 + interval)])
+    dat$`Average Moving Range`[1] <- NA
+    original_avg_mving_rng <- mean(dat$`Average Moving Range`[1:interval], na.rm = T)
+    dat <- limits(dat)
+    return(dat)
   }
-  
+
   #limits calculator
   limits <- function(df){
     df$`Lower Natural Process Limit` <-
@@ -59,7 +55,6 @@ xmR <- function(dataframe, measure, interval, recalc) {
     df$`Upper Natural Process Limit`[1] <- NA
     return(df)
   }
-  
   #run subsetter
   run_subset <- function(subset, order){
     #subset[[order]] <- as.integer(subset[[order]])
@@ -89,18 +84,18 @@ xmR <- function(dataframe, measure, interval, recalc) {
     if (length == 8){
       int <- 5
       } else if (length == 4){
-      int <- 3
+      int <- 4
       }
     if (nrow(subset) >= length) {
       start <- min(subset[[order]], na.rm = T)
       if(length == 8){end <- start+4} else if(length == 4){end <- start+3}
-      lastrow <- max(dat$Order, na.rm = T)
+      lastrow <- max(dat[[order]], na.rm = T)
       new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
       new_mv_rng <- subset$`Moving Range`[1:int]
       new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
       dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
       dat$`Central Line`[start:lastrow] <- new_cnt
-      print(message)
+      #print(message)
       dat <- limits(dat)
       points <- c(points, c(start:end))
       points <- c(min(points):max(points))
@@ -148,7 +143,6 @@ xmR <- function(dataframe, measure, interval, recalc) {
     } 
     return(dat)
   }
-  
   if ((nrow(df)) >= interval) {
     #if no recalculation of limits is desired
     if(recalc == F){df <- starter(df)}
@@ -162,11 +156,32 @@ xmR <- function(dataframe, measure, interval, recalc) {
       df <- runs(df, "short", "lower")
       
     }
+    
+    
     df$`Central Line`[(nrow(df)-3):nrow(df)] <- 
       df$`Central Line`[(nrow(df)-4)]
     df$`Average Moving Range`[(nrow(df)-3):nrow(df)] <-
       df$`Average Moving Range`[(nrow(df)-4)]
     df <- limits(df)
+
+    #rounding
+    df$`Central Line` <- round2(df$`Central Line`, 3)
+    df$`Moving Range` <- round2(df$`Moving Range`, 3)
+    df$`Average Moving Range` <- round2(df$`Average Moving Range`, 3)
+    df$`Lower Natural Process Limit` <-
+      round2(df$`Lower Natural Process Limit`, 3)
+    df$`Upper Natural Process Limit` <-
+      round2(df$`Upper Natural Process Limit`, 3)
+    
   }
- return(df)
+  
+  if ((nrow(df)) < interval) {
+    df$`Central Line` <- NA
+    df$`Moving Range` <- NA
+    df$`Average Moving Range` <- NA
+    df$`Lower Natural Process Limit` <- NA
+    df$`Upper Natural Process Limit` <- NA
+  }
+
+  return(df)
 }
