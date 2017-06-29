@@ -1,7 +1,8 @@
 #'Generate the XMR data for any time-series data. BUT DO NOT USE THIS
 #'@description Will be used to calculate XMR data.
 #'
-#'@param df The dataframe containing the time-series data. Must be in long format.
+#'@param df The dataframe containing the time-series data. 
+#'Must be in long format.
 #'At least 1 variable for time and one variable for measure.
 #'@param measure The column containing the measure. Must be in numeric format.
 #'@param interval The interval you'd like to use to calculate the averages. 
@@ -15,28 +16,33 @@
 #'           do(xmR(., measure = "Retention Rate", interval = 5, recalc = T))
 #'
 #'@export xmR
-xmR <- function(df, measure, interval, recalc) {
+xmR <- function(dataframe, measure, interval, recalc) {
+  
   if (missing(interval)) {interval <- 5}
   if (missing(recalc)) {recalc = F}
+
+  df <- as.data.frame(dataframe, stringsAsFactors = F)
   interval <- round2(interval, 0)
   df$Order <- seq(1, nrow(df), 1)
-  points <- seq(1,interval,1)
   
+  df[[measure]] <- as.numeric(as.character(df[[measure]]))
+  
+  points <- seq(1,interval,1)
   
   #starting conditions
   starter <- function(data){
-  data$`Central Line` <- mean(data[[measure]][1:interval])
-  original_cent <- mean(data[[measure]][1:interval])
-  #moving range
-  data$`Moving Range` <- NA
-  for (i in 1:(nrow(data) - 1)) {
-    data$`Moving Range`[i + 1] <- abs(data[[measure]][i] - data[[measure]][i + 1])
-  }
-  data$`Average Moving Range` <- mean(data$`Moving Range`[2:(1 + interval)])
-  data$`Average Moving Range`[1] <- NA
-  original_avg_mving_rng <- mean(data$`Average Moving Range`[1:interval], na.rm = T)
-  data <- limits(data)
-  return(data)
+    data$`Central Line` <- mean(data[[measure]][1:interval])
+    original_cent <- mean(data[[measure]][1:interval])
+    #moving range
+    data$`Moving Range` <- NA
+    for (i in 1:(nrow(data) - 1)) {
+      data$`Moving Range`[i + 1] <- abs(data[[measure]][i] - data[[measure]][i + 1])
+    }
+    data$`Average Moving Range` <- mean(data$`Moving Range`[2:(1 + interval)])
+    data$`Average Moving Range`[1] <- NA
+    original_avg_mving_rng <- mean(data$`Average Moving Range`[1:interval], na.rm = T)
+    data <- limits(data)
+    return(data)
   }
   
   #limits calculator
@@ -56,11 +62,10 @@ xmR <- function(df, measure, interval, recalc) {
   
   #run subsetter
   run_subset <- function(subset, order){
+    #subset[[order]] <- as.integer(subset[[order]])
     breaks <- c(0, which(diff(subset[[order]]) != 1), length(subset[[order]])) 
     d <- sapply(seq(length(breaks) - 1), function(i) subset[[order]][(breaks[i] + 1):breaks[i+1]]) 
-
     if(is.matrix(d)){d <- split(d, rep(1:ncol(d), each = nrow(d)))}
-    #print(d)
     if(length(d) > 1) {
       rns <- c()
       idx <- c()
@@ -72,23 +77,23 @@ xmR <- function(df, measure, interval, recalc) {
       runs <- data.frame(idx, rns)
       idx <- unique(runs$idx[runs$rns == max(runs$rns)])
       run <- d[idx]
-      #print(run[[1]])
-      #print(subset)
       subset <- subset[subset[[order]] %in% run[[1]],]
     } else {
-      #print(d)
       subset <- subset[subset[[order]] %in% d[[1]],]
-      #print(subset)
     }
   return(subset)
   }
   
   #recalculator
   recalculator <- function(dat, subset, order, length, message){
-    if(length == 8){int <- 5} else if(length == 4){int <- 4}
+    if (length == 8){
+      int <- 5
+      } else if (length == 4){
+      int <- 3
+      }
     if (nrow(subset) >= length) {
       start <- min(subset[[order]], na.rm = T)
-      if(length == 8){end <- start+3} else if(length == 4){end <- start+3}
+      if(length == 8){end <- start+4} else if(length == 4){end <- start+3}
       lastrow <- max(dat$Order, na.rm = T)
       new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
       new_mv_rng <- subset$`Moving Range`[1:int]
@@ -98,40 +103,51 @@ xmR <- function(df, measure, interval, recalc) {
       print(message)
       dat <- limits(dat)
       points <- c(points, c(start:end))
+      points <- c(min(points):max(points))
       assign("points", points, envir = parent.frame())
       return(dat)
     } else {return(dat)}
   }
-  
+
   #runs application
-  runs <- function(dat, run, side){
-    if(run == "short"){
-      l <- 4
-    } else if (run == "long"){l <- 8}
-    if(side == "upper"){
-      dat_sub <- dat %>%
-        filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
-        arrange(., Order)
-    } else if (side == "lower"){
-      dat_sub <- dat %>%
-        filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%
-        arrange(., Order)
-    }
-    mess <- paste0(run, ": ", side)
+  runs <- function(dat, run = c("short", "long"), side = c("upper", "lower")){
+    if(run == "short"){l <- 4} else if (run == "long"){l <- 8}
+      if(side == "upper" && run == "long"){
+        dat_sub <- dat %>%
+          filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
+          arrange(., Order)
+      } else if (side == "lower" && run == "long"){
+        dat_sub <- dat %>%
+          filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%
+          arrange(., Order)
+      }
+      if(side == "upper" && run == "short"){
+        dat_sub <- dat %>%
+          filter(., (abs(.[[measure]] - `Central Line`) > 
+                       abs(.[[measure]] - `Upper Natural Process Limit`))) %>%
+          filter(., !(Order %in% points)) %>%
+          arrange(., Order)
+      } else if (side == "lower" && run == "short"){
+        dat_sub <- dat %>%
+          filter(., (abs(.[[measure]] - `Central Line`) > 
+                       abs(.[[measure]] - `Lower Natural Process Limit`))) %>%
+          filter(., !(Order %in% points)) %>%
+          arrange(., Order)
+      }
     dat_sub <- run_subset(dat_sub, "Order")
     rep <- nrow(dat_sub)
     while(rep >= l){
+      mess <- paste0(run, ": ", side)
       dat <- recalculator(dat, dat_sub, "Order", l, mess)
-      print(points)
+      assign("points", points, envir = parent.frame())
       dat_sub <- dat %>%
         filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
         arrange(., Order)
       dat_sub <- run_subset(dat_sub, "Order")
       rep <- nrow(dat_sub)
-    }
+    } 
     return(dat)
   }
-
   
   if ((nrow(df)) >= interval) {
     #if no recalculation of limits is desired
@@ -141,16 +157,16 @@ xmR <- function(df, measure, interval, recalc) {
     #calculate inital values
       df <- starter(df)
       df <- runs(df, "long", "upper")
-      df <- runs(df, "long", "lower")
       df <- runs(df, "short", "upper")
+      df <- runs(df, "long", "lower")
       df <- runs(df, "short", "lower")
+      
     }
-    df$`Central Line`[(nrow(df)-3):nrow(df-3)] <- 
+    df$`Central Line`[(nrow(df)-3):nrow(df)] <- 
       df$`Central Line`[(nrow(df)-4)]
-    df$`Average Moving Range`[(nrow(df)-3):nrow(df-3)] <-
+    df$`Average Moving Range`[(nrow(df)-3):nrow(df)] <-
       df$`Average Moving Range`[(nrow(df)-4)]
     df <- limits(df)
-      
   }
  return(df)
 }
