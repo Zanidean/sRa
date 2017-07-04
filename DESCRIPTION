@@ -1,8 +1,8 @@
 Package: sRa
 Type: Package
 Title: Functions for improving the life of a research analyst.
-Version: 0.9.9
-Date: 2017-06-23
+Version: 1.0.0
+Date: 2017-07-04
 Authors@R: person("Alex", "Zanidean", email = "AZanidean@mhc.ab.ca",
                   role = c("aut","cre"))
 Maintainer: Alex Zanidean <azanidean@mhc.ab.ca>
