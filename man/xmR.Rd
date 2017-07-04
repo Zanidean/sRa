@@ -2,7 +2,7 @@
 % Please edit documentation in R/xmR.R
 \name{xmR}
 \alias{xmR}
-\title{Generate the XMR data for any time-series data. BUT DO NOT USE THIS}
+\title{Generate the XMR data for any time-series data.}
 \usage{
 xmR(df, measure, interval, recalc, testing)
 }
@@ -26,7 +26,8 @@ Will be used to calculate XMR data.
 dat.xmr <- xmR(dat, "Measure", 5)
 dat.xmr <- dat \%>\% 
           group_by(., Program, Variable) \%>\% 
-          do(xmR(., measure = "Retention Rate", interval = 5, recalc = T)) \%>\% 
-          xmR_chart(., "Time", "Measure", "Facet")
+          do(xmR(., measure = "Retention Rate", 
+          interval = 5, recalc = T))           
+xmR_chart(., "Time", "Measure", "Facet")
 
 }

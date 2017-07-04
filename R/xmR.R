@@ -13,8 +13,9 @@
 #'@examples dat.xmr <- xmR(dat, "Measure", 5)
 #'dat.xmr <- dat %>% 
 #'           group_by(., Program, Variable) %>% 
-#'           do(xmR(., measure = "Retention Rate", interval = 5, recalc = T)) %>% 
-#'           xmR_chart(., "Time", "Measure", "Facet")
+#'           do(xmR(., measure = "Retention Rate", 
+#'           interval = 5, recalc = T))           
+#'xmR_chart(., "Time", "Measure", "Facet")
 #'
 #'@export xmR
 xmR <- function(df, measure, interval, recalc, testing) {
@@ -133,9 +134,11 @@ xmR <- function(df, measure, interval, recalc, testing) {
        dat_sub <- dat %>%
         filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
         arrange(., Order)
-    } else if (side == "lower" && run == "long"){
+    } 
+    else if (side == "lower" && run == "long"){
       dat_sub <- dat %>%
-        filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%          arrange(., Order)
+        filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%  
+        arrange(., Order)
     }
     
     if(side == "upper" && run == "short"){
@@ -143,7 +146,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
         filter(., (abs(.[[measure]] - `Central Line`) > 
                       abs(.[[measure]] - `Upper Natural Process Limit`))) %>%
         filter(., !(Order %in% points)) %>%
-         arrange(., Order)
+        arrange(., Order)
     } else if (side == "lower" && run == "short"){
       dat_sub <- dat %>%
         filter(., (abs(.[[measure]] - `Central Line`) > 
