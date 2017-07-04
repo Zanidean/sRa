@@ -1,5 +1,5 @@
 #'Generate the XMR chart for XMR data
-#'@description Useful for generating the static XMR data for XMR charts. Output can be piped into xmR_chart. Does not recalculate the data for long and short runs....yet.
+#'@description Useful for diagnostics on xmR, and just visualizing the data.
 #'
 #'@param dataframe Output from xmR()
 #'@param measure Measure
