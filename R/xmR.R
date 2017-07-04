@@ -22,11 +22,6 @@ xmR <- function(df, measure, interval, recalc, testing) {
   if (missing(interval)) {interval <- 5}
   if (missing(recalc)) {recalc = F}
   if (missing(testing)) {testing = F}
-  
-  interval <- round2(interval, 0)
-  df$Order <- seq(1, nrow(df), 1)
-  points <- seq(1,interval,1)
-  
   round2 <- function(x, n) {
     posneg = sign(x)
     z = abs(x)*10^n
@@ -35,6 +30,11 @@ xmR <- function(df, measure, interval, recalc, testing) {
     z = z/10^n
     z*posneg
   }
+  
+  interval <- round2(interval, 0)
+  df$Order <- seq(1, nrow(df), 1)
+  points <- seq(1,interval,1)
+  
   
   #starting conditions
   starter <- function(dat){
@@ -108,6 +108,11 @@ xmR <- function(df, measure, interval, recalc, testing) {
       lastrow <- max(dat[[order]], na.rm = T)
       new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
       new_mv_rng <- subset$`Moving Range`[1:int]
+      # sd_p <- sd(new_mv_rng)
+      # mean_p <- mean(new_mv_rng)
+      # new_mv_rng <- new_mv_rng[between(new_mv_rng, 
+      #                                  mean_p-sd_p, 
+      #                                  mean_p+sd_p)]
       new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
       dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
       dat$`Central Line`[start:lastrow] <- new_cnt
