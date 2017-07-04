@@ -1,4 +1,4 @@
-#'Generate the XMR data for any time-series data. BUT DO NOT USE THIS
+#'Generate the XMR data for any time-series data.
 #'@description Will be used to calculate XMR data.
 #'
 #'@param df The dataframe containing the time-series data. 
