@@ -4,17 +4,20 @@
 \alias{xmR}
 \title{Generate the XMR data for any time-series data. BUT DO NOT USE THIS}
 \usage{
-xmR(df, measure, interval, recalc)
+xmR(df, measure, interval, recalc, testing)
 }
 \arguments{
-\item{df}{The dataframe containing the time-series data. Must be in long format.
+\item{df}{The dataframe containing the time-series data. 
+Must be in long format.
 At least 1 variable for time and one variable for measure.}
 
 \item{measure}{The column containing the measure. Must be in numeric format.}
 
-\item{interval}{The interval you'd like to use to calculate the averages. Defaults to 5.}
+\item{interval}{The interval you'd like to use to calculate the averages. 
+Defaults to 5.}
 
-\item{recalc}{Logical if you'd like it to recalculate bounds. Defaults to False.}
+\item{recalc}{Logical if you'd like it to recalculate bounds. 
+Defaults to False.}
 }
 \description{
 Will be used to calculate XMR data.
@@ -23,6 +26,7 @@ Will be used to calculate XMR data.
 dat.xmr <- xmR(dat, "Measure", 5)
 dat.xmr <- dat \%>\% 
           group_by(., Program, Variable) \%>\% 
-          do(xmR(., measure = "Retention Rate", interval = 5, recalc = T))
+          do(xmR(., measure = "Retention Rate", interval = 5, recalc = T)) \%>\% 
+          xmR_chart(., "Time", "Measure", "Facet")
 
 }

@@ -14,7 +14,7 @@ xmR_chart(dataframe, time, measure, facetvar)
 \item{facetvar}{The column containing the factor you'd like to facet on.}
 }
 \description{
-Useful for generating the static XMR data for XMR charts. Output can be piped into xmR_chart. Does not recalculate the data for long and short runs....yet.
+Useful for diagnostics on xmR, and just visualizing the data.
 }
 \examples{
 dat.xmr <- xmR(dat, "Measure", 5)
