@@ -36,7 +36,6 @@ xmR <- function(df, measure, interval, recalc, testing) {
   df$Order <- seq(1, nrow(df), 1)
   points <- seq(1,interval,1)
   
-  
   #starting conditions
   starter <- function(dat){
     original_cent <- mean(dat[[measure]][1:interval])
@@ -194,10 +193,10 @@ xmR <- function(df, measure, interval, recalc, testing) {
 
     }
     
-    df$`Central Line`[(nrow(df)-2):nrow(df)] <- 
-      df$`Central Line`[(nrow(df)-3)]
-    df$`Average Moving Range`[(nrow(df)-2):nrow(df)] <-
-      df$`Average Moving Range`[(nrow(df)-3)]
+    # df$`Central Line`[(nrow(df)-2):nrow(df)] <- 
+    #   df$`Central Line`[(nrow(df)-3)]
+    # df$`Average Moving Range`[(nrow(df)-2):nrow(df)] <-
+    #   df$`Average Moving Range`[(nrow(df)-3)]
     df <- limits(df)
 
     #rounding
