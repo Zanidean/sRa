@@ -23,6 +23,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
   if (missing(interval)) {interval <- 5}
   if (missing(recalc)) {recalc = F}
   if (missing(testing)) {testing = F}
+  
   round2 <- function(x, n) {
     posneg = sign(x)
     z = abs(x)*10^n
@@ -133,11 +134,48 @@ xmR <- function(df, measure, interval, recalc, testing) {
        dat_sub <- dat %>%
         filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
         arrange(., Order)
-    } 
-    else if (side == "lower" && run == "long"){
+       dat_sub <- run_subset(dat_sub, "Order")
+       rep <- nrow(dat_sub)
+       while(rep >= l){
+         mess <- paste0(run, ": ", side)
+         
+         dat <- recalculator(dat, dat_sub, "Order", l, mess)
+         assign("points", points, envir = parent.frame())
+         
+         if(testing == T){
+           print(mess) 
+           print(points)
+         }
+         
+         dat_sub <- dat %>%
+           filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
+           arrange(., Order)
+         dat_sub <- run_subset(dat_sub, "Order")
+         rep <- nrow(dat_sub)
+        } 
+    } else if (side == "lower" && run == "long"){
       dat_sub <- dat %>%
         filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%  
         arrange(., Order)
+      dat_sub <- run_subset(dat_sub, "Order")
+      rep <- nrow(dat_sub)
+      while(rep >= l){
+        mess <- paste0(run, ": ", side)
+        
+        dat <- recalculator(dat, dat_sub, "Order", l, mess)
+        assign("points", points, envir = parent.frame())
+        
+        if(testing == T){
+          print(mess) 
+          print(points)
+        }
+        
+        dat_sub <- dat %>%
+          filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%
+          arrange(., Order)
+        dat_sub <- run_subset(dat_sub, "Order")
+        rep <- nrow(dat_sub)
+      }
     }
     
     if(side == "upper" && run == "short"){
@@ -146,32 +184,54 @@ xmR <- function(df, measure, interval, recalc, testing) {
                       abs(.[[measure]] - `Upper Natural Process Limit`))) %>%
         filter(., !(Order %in% points)) %>%
         arrange(., Order)
+       dat_sub <- run_subset(dat_sub, "Order")
+       rep <- nrow(dat_sub)
+       
+       while(rep >= l){
+         mess <- paste0(run, ": ", side)
+         
+         dat <- recalculator(dat, dat_sub, "Order", l, mess)
+         assign("points", points, envir = parent.frame())
+         
+         if(testing == T){
+           print(mess) 
+           print(points)
+         }
+         dat_sub <- dat %>%
+           filter(., (abs(.[[measure]] - `Central Line`) > 
+                        abs(.[[measure]] - `Upper Natural Process Limit`))) %>%
+           filter(., !(Order %in% points)) %>%
+           arrange(., Order)
+         dat_sub <- run_subset(dat_sub, "Order")
+         rep <- nrow(dat_sub)
+       }
     } else if (side == "lower" && run == "short"){
       dat_sub <- dat %>%
         filter(., (abs(.[[measure]] - `Central Line`) > 
                      abs(.[[measure]] - `Lower Natural Process Limit`))) %>%
         filter(., !(Order %in% points)) %>%
         arrange(., Order)
-    }
-    dat_sub <- run_subset(dat_sub, "Order")
-    rep <- nrow(dat_sub)
-    while(rep >= l){
-      mess <- paste0(run, ": ", side)
-
-      dat <- recalculator(dat, dat_sub, "Order", l, mess)
-      assign("points", points, envir = parent.frame())
-      
-      if(testing == T){
-        print(mess) 
-        print(points)
-        }
-
-      dat_sub <- dat %>%
-        filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
-        arrange(., Order)
       dat_sub <- run_subset(dat_sub, "Order")
       rep <- nrow(dat_sub)
-    } 
+      while(rep >= l){
+        mess <- paste0(run, ": ", side)
+        
+        dat <- recalculator(dat, dat_sub, "Order", l, mess)
+        assign("points", points, envir = parent.frame())
+        
+        if(testing == T){
+          print(mess) 
+          print(points)
+        }
+        dat_sub <- dat %>%
+          filter(., (abs(.[[measure]] - `Central Line`) > 
+                       abs(.[[measure]] - `Lower Natural Process Limit`))) %>%
+          filter(., !(Order %in% points)) %>%
+          arrange(., Order)
+        dat_sub <- run_subset(dat_sub, "Order")
+        rep <- nrow(dat_sub)
+      }
+    }  
     return(dat)
   }
   
