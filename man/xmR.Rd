@@ -8,7 +8,7 @@ xmR(df, measure, interval, recalc, testing)
 }
 \arguments{
 \item{df}{The dataframe containing the time-series data. 
-Must be in long format.
+Must be in tidy format.
 At least 1 variable for time and one variable for measure.}
 
 \item{measure}{The column containing the measure. Must be in numeric format.}
@@ -16,13 +16,19 @@ At least 1 variable for time and one variable for measure.}
 \item{interval}{The interval you'd like to use to calculate the averages. 
 Defaults to 5.}
 
-\item{recalc}{Logical if you'd like it to recalculate bounds. 
-Defaults to False.}
+\item{recalc}{Logical if you'd like it to recalculate bounds. Defaults to False
+
+
+Long Runs - 8 consecutive points above or below the central line and after the initial 5 points. If a long run is present, then use the first 5 points to recalculathe new bounds, after which these points are never to be used again. These newly calculated bounds begin at the first point in the long run and extend to the end of the chart, unless re-calculated after the end of the run. If the long run is longer than 8 points, it should still be enveloped by the bounds of normal variation to be re-calculated.
+
+
+Short Runs - 3 of 4 points that are closer to either bound than they are to the central line and after the initial 5 points. If a short run is made by points not previously used in a calculation, then use those points to calculate new bounds and exclude them from any further calculations. A single point may be used in two calculations if Like long runs, these newly calculated bounds begin at the first point in the short run, and extend to the end of the chart unless re-calculated after the end of the run.}
 }
 \description{
 Will be used to calculate XMR data.
 }
 \examples{
+
 dat.xmr <- xmR(dat, "Measure", 5)
 dat.xmr <- dat \%>\% 
           group_by(., Program, Variable) \%>\% 
