@@ -182,7 +182,8 @@ xmR <- function(df, measure, interval, recalc, testing) {
         new_mv_rng <- subset$`Moving Range`
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
         start <- min(subset[[order]][subset$Test == 1], na.rm = T)
-        #end <- start+2
+        end <- max(subset[[order]][subset$Test == 1], na.rm = T)
+        
       }
       dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
       dat$`Central Line`[start:lastrow] <- new_cnt
