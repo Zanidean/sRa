@@ -35,7 +35,7 @@ fuzzyClean <- function(vector, distance, iterations){
     dat <- gsub(" \\,", "\\, ", dat)
     dat <- gsub("of", " of", dat)
     dat <- gsub("to", " to", dat)
-    dat <- gsub(" with", " with", dat)
+    dat <- gsub("with", " with", dat)
     dat <- gsub("mgmt", "Management", dat, ignore.case = T)
     dat <- gsub("fund\\b", "Fundamentals", dat, ignore.case = T)
     dat <- gsub("occ\\b", "Occupational", dat, ignore.case = T)
