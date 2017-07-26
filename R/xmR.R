@@ -28,8 +28,8 @@
 xmR <- function(df, measure, interval, recalc, testing) {
   
   if (missing(interval)) {interval <- 5}
-  if (missing(recalc)) {recalc = F}
-  if (missing(testing)) {testing = F}
+  if (missing(recalc)) {recalc <- F}
+  if (missing(testing)) {testing <- F}
   
   round2 <- function(x, n) {
     posneg = sign(x)
@@ -48,13 +48,12 @@ xmR <- function(df, measure, interval, recalc, testing) {
   starter <- function(dat){
     original_cent <- mean(dat[[measure]][1:interval])
     dat$`Central Line` <- original_cent
-    
     #moving range
     dat$`Moving Range` <- abs(dat[[measure]] - lag(dat[[measure]], 1))
     for (i in 1:(nrow(dat) - 1)) {
       dat$`Moving Range`[i + 1] <- abs(dat[[measure]][i] - dat[[measure]][i + 1])
     }
-    dat$`Average Moving Range` <- mean(dat$`Moving Range`[2:(1 + interval)])
+    dat$`Average Moving Range` <- mean(dat$`Moving Range`[2:(interval)])
     dat$`Average Moving Range`[1] <- NA
     original_avg_mving_rng <- mean(dat$`Average Moving Range`[1:interval], na.rm = T)
     dat <- limits(dat)
