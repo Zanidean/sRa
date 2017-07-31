@@ -176,23 +176,32 @@ xmR <- function(df, measure, interval, recalc, testing) {
         new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
         new_mv_rng <- subset$`Moving Range`[1:int]
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
+        dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
+        dat$`Central Line`[start:lastrow] <- new_cnt
+        dat <- limits(dat)
+        calcpoints <- start:end
+        points <- c(points, calcpoints)
+        points <- c(min(points):max(points))
+        assign("points", points, envir = parent.frame())
+        assign("calcpoints", calcpoints, envir = parent.frame())
+        return(dat)
       } else if (length == 4){
         new_cnt <- mean(subset[[measure]][subset$Test == 1], na.rm = T)
         new_mv_rng <- subset$`Moving Range`
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
         start <- min(subset[[order]][subset$Test == 1], na.rm = T)
         end <- max(subset[[order]][subset$Test == 1], na.rm = T)
-        
+        dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
+        dat$`Central Line`[start:lastrow] <- new_cnt
+        dat <- limits(dat)
+        calcpoints <- start:end
+        #points <- c(points, calcpoints)
+        #points <- c(min(points):max(points))
+        assign("points", points, envir = parent.frame())
+        assign("calcpoints", calcpoints, envir = parent.frame())
+        return(dat)
       }
-      dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
-      dat$`Central Line`[start:lastrow] <- new_cnt
-      dat <- limits(dat)
-      calcpoints <- start:end
-      points <- c(points, calcpoints)
-      points <- c(min(points):max(points))
-      assign("points", points, envir = parent.frame())
-      assign("calcpoints", calcpoints, envir = parent.frame())
-      return(dat)
+
     } else {return(dat)}
   }
   
@@ -311,6 +320,9 @@ xmR <- function(df, measure, interval, recalc, testing) {
       df <- runs(df, "short", "lower")
       df <- runs(df, "short", "upper")
       df <- runs(df, "short", "lower")
+
+
+
     }
     df <- limits(df)
     #rounding
