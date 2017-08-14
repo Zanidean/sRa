@@ -30,7 +30,7 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
   
   if(missing(facetvar)){
     plot <- ggplot(dataframe,
-                   aes(dataframe[[time]])) +
+                   aes(dataframe[[time]], group = 1)) +
       geom_line(aes(y = `Central Line`),
                 size = 0.5, linetype = "dotted", na.rm = T) +
       geom_line(aes(y = `Lower Natural Process Limit`), color = "#d02b27",
