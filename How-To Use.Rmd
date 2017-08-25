@@ -1,0 +1,9 @@
+---
+title: "How to use xmR() and xmR_chart()"
+author: "Alex Zanidean"
+output: 
+  html_document: 
+    css: css/custom.css
+    toc: yes
+    toc_depth: 1
+---
