@@ -29,7 +29,7 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
           axis.title.x = element_text(size = 9, face = "bold"))
   
   if(missing(facetvar)){
-    plot <- ggplot(dataframe, aes(dataframe[[time]], group = 1)) +
+    plot <- ggplot(dataframe, aes(as.character(dataframe[[time]]), group = 1)) +
       geom_line(aes(y = `Central Line`),
                 size = 0.5, 
                 linetype = "dotted", 
@@ -58,7 +58,7 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
     return(plot)
   } else {
       plot <- ggplot(dataframe,
-                   aes(dataframe[[time]], group = dataframe[[facetvar]])) +
+                   aes(as.character(dataframe[[time]]), group = dataframe[[facetvar]])) +
         geom_line(aes(y = `Central Line`),
                   size = 0.5, 
                   linetype = "dotted", 
