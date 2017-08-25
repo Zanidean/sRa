@@ -79,10 +79,10 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
         geom_point(aes(y = dataframe[[measure]]), 
                    size = 1.25, 
                    color = "#7ECBB5") +
-        geom_text(aes(y = dataframe[[measure]]), 
-                  label = round(dataframe[[measure]]), 
-                  vjust = -1, 
-                  size = 2.8) + 
+        # geom_text(aes(y = dataframe[[measure]]), 
+        #           label = round(dataframe[[measure]]), 
+        #           vjust = -1, 
+        #           size = 2.8) + 
         guides(colour=FALSE) +  
         facet_wrap(~dataframe[[facetvar]], 
                    scales = "free") + 
