@@ -29,18 +29,29 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
           axis.title.x = element_text(size = 9, face = "bold"))
   
   if(missing(facetvar)){
-    plot <- ggplot(dataframe,
-                   aes(dataframe[[time]], group = 1)) +
+    plot <- ggplot(dataframe, aes(dataframe[[time]], group = 1)) +
       geom_line(aes(y = `Central Line`),
-                size = 0.5, linetype = "dotted", na.rm = T) +
-      geom_line(aes(y = `Lower Natural Process Limit`), color = "#d02b27",
-                size = 0.5, linetype = "dashed", na.rm = T) +
-      geom_line(aes(y = `Upper Natural Process Limit`), color = "#d02b27",
-                size = 0.5, linetype = "dashed", na.rm = T) +
+                size = 0.5, 
+                linetype = "dotted", 
+                na.rm = T) +
+      geom_line(aes(y = `Lower Natural Process Limit`), 
+                color = "#d02b27",
+                size = 0.5, 
+                linetype = "dashed", 
+                na.rm = T) +
+      geom_line(aes(y = `Upper Natural Process Limit`), 
+                color = "#d02b27",
+                size = 0.5, 
+                linetype = "dashed", na.rm = T) +
       geom_line(aes(y = dataframe[[measure]])) + 
-      geom_point(aes(y = dataframe[[measure]]), size = 2, color = "#000000") +
-      geom_point(aes(y = dataframe[[measure]]), size = 1.25, color = "#7ECBB5") +
-      geom_text(aes(y = dataframe[[measure]]), label = round(dataframe[[measure]]), vjust = -1, size = 2.8) + 
+      geom_point(aes(y = dataframe[[measure]]), 
+                 size = 2, color = "#000000") +
+      geom_point(aes(y = dataframe[[measure]]), 
+                 size = 1.25, color = "#7ECBB5") +
+      geom_text(aes(y = dataframe[[measure]]), 
+                label = round(dataframe[[measure]]), 
+                vjust = -1,
+                size = 2.8) + 
       guides(colour=FALSE) + 
       labs(x = time, y = measure) +
       whitetheme
@@ -49,17 +60,32 @@ xmR_chart <- function(dataframe, time, measure, facetvar){
       plot <- ggplot(dataframe,
                    aes(dataframe[[time]], group = dataframe[[facetvar]])) +
         geom_line(aes(y = `Central Line`),
-                  size = 0.5, linetype = "dotted", na.rm = T) +
-        geom_line(aes(y = `Lower Natural Process Limit`), color = "#d02b27",
-                  size = 0.5, linetype = "dashed", na.rm = T) +
+                  size = 0.5, 
+                  linetype = "dotted", 
+                  na.rm = T) +
+        geom_line(aes(y = `Lower Natural Process Limit`), 
+                  color = "#d02b27",
+                  size = 0.5, 
+                  linetype = "dashed", 
+                  na.rm = T) +
         geom_line(aes(y = `Upper Natural Process Limit`), color = "#d02b27",
-                  size = 0.5, linetype = "dashed", na.rm = T) +
+                  size = 0.5, 
+                  linetype = "dashed", 
+                  na.rm = T) +
         geom_line(aes(y = dataframe[[measure]])) + 
-        geom_point(aes(y = dataframe[[measure]]), size = 2, color = "#000000") +
-        geom_point(aes(y = dataframe[[measure]]), size = 1.25, color = "#7ECBB5") +
-        geom_text(aes(y = dataframe[[measure]]), label = round(dataframe[[measure]]), vjust = -1, size = 2.8) + 
+        geom_point(aes(y = dataframe[[measure]]), 
+                   size = 2, 
+                   color = "#000000") +
+        geom_point(aes(y = dataframe[[measure]]), 
+                   size = 1.25, 
+                   color = "#7ECBB5") +
+        geom_text(aes(y = dataframe[[measure]]), 
+                  label = round(dataframe[[measure]]), 
+                  vjust = -1, 
+                  size = 2.8) + 
         guides(colour=FALSE) +  
-        facet_wrap(~dataframe[[facetvar]], scales = "free") + 
+        facet_wrap(~dataframe[[facetvar]], 
+                   scales = "free") + 
         labs(x = time, y = measure) +
         whitetheme
   return(plot)
