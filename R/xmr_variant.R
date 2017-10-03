@@ -161,7 +161,7 @@ xmR_variant <- function(df, measure, interval, recalc, testing) {
   
   #recalculator
   recalculator <- function(dat, subset, order, length, message){
-    if(length == 8){
+    if(length == 9){
       int <- 5
       subset$Test <- 1
     } else if (length == 3){
@@ -169,10 +169,10 @@ xmR_variant <- function(df, measure, interval, recalc, testing) {
     }
     if(nrow(subset) >= length){
       start <- min(subset[[order]], na.rm = T)
-      if(length == 8){end <- start+3} 
+      if(length == 9){end <- start+3} 
       else if(length == 3){end <- start+1}
       lastrow <- max(dat[[order]], na.rm = T)
-      if (length == 8){
+      if (length == 9){
         new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
         new_mv_rng <- subset$`Moving Range`[1:int]
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
@@ -207,7 +207,7 @@ xmR_variant <- function(df, measure, interval, recalc, testing) {
   
   #runs application
   runs <- function(dat, run = c("short", "long"), side = c("upper", "lower")){
-    if(run == "short"){l <- 3} else if (run == "long"){l <- 8}
+    if(run == "short"){l <- 3} else if (run == "long"){l <- 9}
     
     #upper longruns
     if(side == "upper" && run == "long"){
@@ -314,10 +314,11 @@ xmR_variant <- function(df, measure, interval, recalc, testing) {
     if(recalc == T){
       #calculate inital values
       df <- starter(df)
-      df <- runs(df, "short", "upper")
-      df <- runs(df, "short", "lower")
+
       df <- runs(df, "long", "upper")
       df <- runs(df, "long", "lower")
+      df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
       df <- runs(df, "short", "upper")
       df <- runs(df, "short", "lower")
       
