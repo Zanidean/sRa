@@ -44,6 +44,22 @@ xmR <- function(df, measure, interval, recalc, testing) {
   df$Order <- seq(1, nrow(df), 1)
   points <- seq(1,interval,1)
   
+  #limits calculator
+  limits <- function(df){
+    df$`Lower Natural Process Limit` <-
+      df$`Central Line` - (df$`Average Moving Range` * 2.66)
+    df$`Lower Natural Process Limit`[1] <- NA
+    df$`Lower Natural Process Limit` <-
+      ifelse(df$`Lower Natural Process Limit` <= 0,
+             0,
+             df$`Lower Natural Process Limit`)
+    df$`Upper Natural Process Limit` <-
+      df$`Central Line` + (df$`Average Moving Range` * 2.66)
+    df$`Upper Natural Process Limit`[1] <- NA
+    return(df)
+  }
+  
+  
   #starting conditions
   starter <- function(dat){
     original_cent <- mean(dat[[measure]][1:interval])
@@ -60,20 +76,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
     return(dat)
   }
 
-  #limits calculator
-  limits <- function(df){
-    df$`Lower Natural Process Limit` <-
-    df$`Central Line` - (df$`Average Moving Range` * 2.66)
-    df$`Lower Natural Process Limit`[1] <- NA
-    df$`Lower Natural Process Limit` <-
-      ifelse(df$`Lower Natural Process Limit` <= 0,
-             0,
-             df$`Lower Natural Process Limit`)
-    df$`Upper Natural Process Limit` <-
-      df$`Central Line` + (df$`Average Moving Range` * 2.66)
-    df$`Upper Natural Process Limit`[1] <- NA
-    return(df)
-  }
+
   
   #testing for shortruns
   shortruns <- function(df, side, points){
@@ -314,17 +317,38 @@ xmR <- function(df, measure, interval, recalc, testing) {
     if(recalc == F){df <- starter(df)}
     #if recalculation of limits desired
     if(recalc == T){
+      
+      
     #calculate inital values
       df <- starter(df)
       df <- runs(df, "short", "upper")
       df <- runs(df, "short", "lower")
       df <- runs(df, "long", "upper")
       df <- runs(df, "long", "lower")
-      df <- runs(df, "short", "lower")
+      
+      
+      
+      #recursive evaluation
+      outside <- df %>%
+        filter(.[[measure]] < `Lower Natural Process Limit` |
+               .[[measure]] > `Upper Natural Process Limit`) %>% 
+        mutate(diff = Order - lag(Order, 1)) %>% 
+        filter(diff == 1) %>% 
+        nrow()
+      #print(outside)
+
+      while(outside > 1){
       df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
       df <- runs(df, "long", "upper")
       df <- runs(df, "long", "lower")
-      
+      df <- limits(df)
+      outside <- df %>%
+        filter(.[[measure]] < `Lower Natural Process Limit` |
+               .[[measure]] > `Upper Natural Process Limit`) %>%
+        nrow()
+      #print(outside)
+      }
 
 
     }
