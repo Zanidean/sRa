@@ -322,7 +322,8 @@ xmR <- function(df, measure, interval, recalc, testing) {
       df <- runs(df, "long", "lower")
       df <- runs(df, "short", "lower")
       df <- runs(df, "short", "upper")
-
+      df <- runs(df, "long", "upper")
+      df <- runs(df, "long", "lower")
       
 
 
