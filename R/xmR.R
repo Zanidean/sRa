@@ -314,6 +314,8 @@ xmR <- function(df, measure, interval, recalc, testing) {
     if(recalc == T){
     #calculate inital values
       df <- starter(df)
+      df <- runs(df, "short", "lower")
+      df <- runs(df, "short", "upper")
       df <- runs(df, "long", "upper")
       df <- runs(df, "long", "lower")
       df <- runs(df, "short", "lower")
