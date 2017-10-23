@@ -176,8 +176,10 @@ xmR <- function(df, measure, interval, recalc, testing) {
         new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
         new_mv_rng <- subset$`Moving Range`[1:int]
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
-        dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
-        dat$`Central Line`[start:lastrow] <- new_cnt
+        #dat$`Average Moving Range`[start:lastrow] <- new_av_mv_rng
+        #dat$`Central Line`[start:lastrow] <- new_cnt
+        dat$`Average Moving Range`[start:end] <- new_av_mv_rng
+        dat$`Central Line`[start:end] <- new_cnt
         dat <- limits(dat)
         calcpoints <- start:end
         points <- c(points, calcpoints)
@@ -314,10 +316,11 @@ xmR <- function(df, measure, interval, recalc, testing) {
     if(recalc == T){
     #calculate inital values
       df <- starter(df)
-      df <- runs(df, "short", "lower")
-      df <- runs(df, "short", "upper")
+
       df <- runs(df, "long", "upper")
       df <- runs(df, "long", "lower")
+      df <- runs(df, "short", "lower")
+      df <- runs(df, "short", "upper")
       df <- runs(df, "short", "lower")
       df <- runs(df, "short", "upper")
       df <- runs(df, "short", "lower")
