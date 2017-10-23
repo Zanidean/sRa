@@ -195,8 +195,8 @@ xmR <- function(df, measure, interval, recalc, testing) {
         dat$`Central Line`[start:lastrow] <- new_cnt
         dat <- limits(dat)
         calcpoints <- start:end
-        #points <- c(points, calcpoints)
-        #points <- c(min(points):max(points))
+        points <- c(points, calcpoints)
+        points <- c(min(points):max(points))
         assign("points", points, envir = parent.frame())
         assign("calcpoints", calcpoints, envir = parent.frame())
         return(dat)
@@ -320,7 +320,11 @@ xmR <- function(df, measure, interval, recalc, testing) {
       df <- runs(df, "long", "lower")
       df <- runs(df, "short", "upper")
       df <- runs(df, "short", "lower")
-
+      df <- runs(df, "long", "upper")
+      df <- runs(df, "long", "lower")
+      df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
+      
 
 
     }
