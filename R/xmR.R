@@ -218,8 +218,8 @@ xmR <- function(df, measure, interval, recalc, testing) {
     if(side == "upper" && run == "long"){
        dat_sub <- dat %>%
         filter(., .[[measure]] > `Central Line` & 
-                 abs(.[[measure]] - `Central Line`) < 
-                 abs(.[[measure]] - `Upper Natural Process Limit`) &
+                 #abs(.[[measure]] - `Central Line`) < 
+                 #abs(.[[measure]] - `Upper Natural Process Limit`) &
                  !(Order %in% points)) %>%
         arrange(., Order)
        dat_sub <- run_subset(dat_sub, "Order")
@@ -244,8 +244,8 @@ xmR <- function(df, measure, interval, recalc, testing) {
     else if(side == "lower" && run == "long"){
       dat_sub <- dat %>%
         filter(., .[[measure]] < `Central Line` & 
-                 abs(.[[measure]] - `Central Line`) < 
-                 abs(.[[measure]] - `Lower Natural Process Limit`) &
+                 #abs(.[[measure]] - `Central Line`) < 
+                 #abs(.[[measure]] - `Lower Natural Process Limit`) &
                  !(Order %in% points)) %>%  
         arrange(., Order)
       dat_sub <- run_subset(dat_sub, "Order")
