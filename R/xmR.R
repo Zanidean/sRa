@@ -186,7 +186,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
         dat <- limits(dat)
         calcpoints <- start:end
         points <- c(points, calcpoints)
-        points <- c(min(points):max(points))
+        #points <- c(min(points):max(points))
         assign("points", points, envir = parent.frame())
         assign("calcpoints", calcpoints, envir = parent.frame())
         return(dat)
@@ -200,7 +200,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
         dat$`Central Line`[start:lastrow] <- new_cnt
         dat <- limits(dat)
         calcpoints <- start:end
-        points <- c(points, calcpoints)
+        #points <- c(points, calcpoints)
         #points <- c(min(points):max(points))
         assign("points", points, envir = parent.frame())
         assign("calcpoints", calcpoints, envir = parent.frame())
@@ -217,7 +217,10 @@ xmR <- function(df, measure, interval, recalc, testing) {
     #upper longruns
     if(side == "upper" && run == "long"){
        dat_sub <- dat %>%
-        filter(., .[[measure]] > `Central Line` & !(Order %in% points)) %>%
+        filter(., .[[measure]] > `Central Line` & 
+                 abs(.[[measure]] - `Central Line`) < 
+                 abs(.[[measure]] - `Upper Natural Process Limit`) &
+                 !(Order %in% points)) %>%
         arrange(., Order)
        dat_sub <- run_subset(dat_sub, "Order")
        rep <- nrow(dat_sub)
@@ -240,7 +243,10 @@ xmR <- function(df, measure, interval, recalc, testing) {
     #lower longruns
     else if(side == "lower" && run == "long"){
       dat_sub <- dat %>%
-        filter(., .[[measure]] < `Central Line` & !(Order %in% points)) %>%  
+        filter(., .[[measure]] < `Central Line` & 
+                 abs(.[[measure]] - `Central Line`) < 
+                 abs(.[[measure]] - `Lower Natural Process Limit`) &
+                 !(Order %in% points)) %>%  
         arrange(., Order)
       dat_sub <- run_subset(dat_sub, "Order")
       rep <- nrow(dat_sub)
@@ -321,59 +327,53 @@ xmR <- function(df, measure, interval, recalc, testing) {
       
     #calculate inital values
       df <- starter(df)
+      df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
+      df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
+      df <- runs(df, "long", "upper")
+      df <- runs(df, "long", "lower")
+      df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
+      df <- runs(df, "long", "upper")
+      df <- runs(df, "long", "lower")
+      df <- runs(df, "short", "upper")
+      df <- runs(df, "short", "lower")
+      df <- runs(df, "long", "upper")
+      df <- runs(df, "long", "lower")
+      df <- limits(df)
+ 
+
       
-      repeatedXMR <- function(data){
-        data <- runs(data, "short", "upper")
-        data <- runs(data, "short", "lower")
-        data <- runs(data, "long", "upper")
-        data <- runs(data, "long", "lower")
-        data <- limits(data)
-        return(data)
-      }
-      
-      rep <- 25
-      while(rep > 0){
-      df <- repeatedXMR(df)
-      rep <- rep-1
-      }
-      # #recursive evaluation
-      # outside <- df %>%
-      #   filter(.[[measure]] < `Lower Natural Process Limit` |
-      #          .[[measure]] > `Upper Natural Process Limit` |
-      #            (abs(df[[measure]] - df$`Central Line`) > 
-      #               abs(df[[measure]] - df$`Upper Natural Process Limit`)) |
-      #            (abs(df[[measure]] - df$`Central Line`) > 
-      #               abs(df[[measure]] - df$`Lower Natural Process Limit`))
-      #            ) %>% 
-      #   mutate(diff = Order - lag(Order, 1)) %>% 
-      #   filter(diff == 1) %>% 
-      #   mutate(diff2 = Order - lag(Order, 1)) %>% 
-      #   filter(diff2 == 1) %>% nrow()
-      # 
-      # while(outside > 1){
-      # df <- runs(df, "short", "upper")
-      # df <- runs(df, "short", "lower")
-      # df <- runs(df, "long", "upper")
-      # df <- runs(df, "long", "lower")
-      # df <- limits(df)
-      # outside <- df %>%
-      #   filter(.[[measure]] < `Lower Natural Process Limit` |
-      #          .[[measure]] > `Upper Natural Process Limit` |
-      #            (abs(df[[measure]] - df$`Central Line`) > 
-      #               abs(df[[measure]] - df$`Upper Natural Process Limit`)) |
-      #            (abs(df[[measure]] - df$`Central Line`) > 
-      #               abs(df[[measure]] - df$`Lower Natural Process Limit`))
-      #          ) %>% 
-      #   mutate(diff = Order - lag(Order, 1)) %>% 
-      #   filter(diff == 1) %>% 
-      #   mutate(diff2 = Order - lag(Order, 1)) %>% 
-      #   filter(diff2 == 1) %>% 
-      #   nrow()
+      # print(points)
+      # repeatedXMR <- function(data, points){
+      #   data <- runs(data, "short", "upper")
+      #   data <- runs(data, "short", "lower")
+      #   data <- runs(data, "long", "upper")
+      #   data <- runs(data, "long", "lower")
+      #   data <- limits(data)
+      #   print(points)
+      #   return(data)
       # }
-
-
+      # 
+      # rep <- 5
+      # while(rep > 0){
+      # df <- repeatedXMR(df, points)
+      # rep <- rep-1
+      # }
+      
+      
     }
+    
+    
+    lastpoint <- max(df$Order)
+    df$`Central Line`[c((lastpoint-2):lastpoint)] <- 
+      df$`Central Line`[c(lastpoint-2)]
+    df$`Average Moving Range`[c((lastpoint-2):lastpoint)] <- 
+      df$`Average Moving Range`[c(lastpoint-2)]
+    
     df <- limits(df)
+    
     #rounding
     df$`Central Line` <- round2(df$`Central Line`, 3)
     df$`Moving Range` <- round2(df$`Moving Range`, 3)
@@ -382,6 +382,10 @@ xmR <- function(df, measure, interval, recalc, testing) {
       round2(df$`Lower Natural Process Limit`, 3)
     df$`Upper Natural Process Limit` <-
       round2(df$`Upper Natural Process Limit`, 3)
+    
+    
+    
+    
   }
   if ((nrow(df)) < interval) {
     df$`Central Line` <- NA
