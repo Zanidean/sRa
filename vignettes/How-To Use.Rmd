@@ -1,0 +1,124 @@
+---
+title: "How to Use XMR"
+author: "Alex Zanidean"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+#Introduction
+
+XMR control charts are useful when determining if there are significant trends in data. XMR charts have two key assumptions: one is that the measurements of value happen over time, and the other is that each measurement of time has one measurement of value. 
+
+
+Take careful thought about *what* you are trying to measure with XMR. Proportions work best, headcount is okay, costs over time aren't great.
+
+-------
+
+#Arguments
+
+The arguments for `xmR()` are as follows. 
+
+- **df**: The dataframe containing the time-series data. At least 1 variable for time and one variable for measure.
+
+- **measure**: The column containing the measure. Must be in a numeric format.
+
+- **interval**: The interval you'd like to use to calculate the averages. Defaults to 5.
+
+- **recalc**: Logical if you'd like it to recalculate bounds. Defaults to False for safety.
+
+
+The data required for XMR charts take a specific format, with at least two columns of data - one for the time variable and another for the measurement. Like so:
+
+```{r, message=FALSE, echo = F}
+library(sRa)
+set.seed(1)
+Measure <- round(runif(10, min = 0.50, max = 0.75)*100, 0)
+Measure <- c(Measure, round(runif(8, min = 0.75, max = 1)*100, 0))
+Time <- c(2000:2017) 
+example_data <- data.frame(Time, Measure)
+knitr::kable(example_data, format = "markdown", align = 'c')
+```
+
+The function use on this set of data would be written like this if we wanted the boundries to recalculate. 
+
+```{r, message=FALSE, eval = F}
+xmr_data <- xmR(df = example_data, measure = "Measure", recalc = T)
+```
+
+The measure column must be written within quotes. 
+
+Output data looks like this:
+```{r, echo=F, message=FALSE}
+xmr_data <- xmR(df = example_data, measure = "Measure", recalc = T) %>% select(-Order)
+knitr::kable(xmr_data, format = "markdown", align = 'c')
+```
+-------
+
+# Charts
+
+That data calculation is handy, but what about visualization?
+
+There is a function called `xmR_chart()` which takes that output, and generates a ggplot graphic so the user can identify trends in the data. 
+
+The arguments for `xmR_chart()` are as follows. 
+
+- **dataframe**: Output from xmR()
+
+- **time**: The column containing the time variable for the x-axis.
+
+- **measure**: The column containing the measure for the y-axis. 
+
+- **facetvar**: Split the chart by a facet variable. Explained in the next section.
+
+
+```{r, fig.height=5}
+xmR_chart(dataframe = xmr_data, time = "Time", measure = "Measure")
+```
+
+-------
+
+# Other Packages
+
+Simple datasets like those illustrated above are common, but more common are large datasets with multiple factors. Consider the following data. How would the `xmR()` function benefit the user in this case? 
+
+```{r, message=FALSE, echo = F}
+library(sRa)
+library(air)
+library(tidyverse)
+lers_data <- get_enrolment("FLE", c("Gender"), c("MH")) %>% 
+  mutate(`Academic Year` = gsub("-20", "-", `Academic Year`))
+knitr::kable(lers_data, format = "markdown", align = 'c')
+```
+
+The answer is by leveraging other R packages, namely the `tidyverse`. 
+
+You can install and load the tidyverse by the following. 
+
+```{r, eval = F}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+What this enables is a number of verb-type functions for tidying and wrangling data. This is how to use them alongside the `xmR()` function. 
+
+
+-------
+
+# Grouping and Faceting
+
+Take our data of enrolment `lers_data` and here is how to apply the `xmR()` function to certain groups within that data. 
+
+```{r, echo=FALSE}
+lers_xmr <- lers_data %>% group_by(Gender) %>% do(xmR(., "FLE", recalc = T))
+knitr::kable(lers_xmr, format = "markdown", align = 'c')
+```
+
+And as you may be able to see, the XMR data calculated on FLE **AND** by Gender, in one function instead of having to manually split the data. Now, if we tried to plot this data we would do the following. 
+
+
+```{r, fig.height=7, fig.width=10}
+xmR_chart(dataframe = lers_xmr, time = "Academic Year", measure = "FLE", facetvar = "Gender")
+```
