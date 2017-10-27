@@ -1,4 +1,4 @@
-#'Use clean fuzzy strings by using approximated string matching
+#'Use clean fuzzy strings by using approximated string matching. Use with caution.
 #'
 #'@param vector Vector containing strings to clean
 #'@param distance Distance between strings to match.

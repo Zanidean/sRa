@@ -2,7 +2,7 @@
 % Please edit documentation in R/fuzzyClean.R
 \name{fuzzyClean}
 \alias{fuzzyClean}
-\title{Use clean fuzzy strings by using approximated string matching}
+\title{Use clean fuzzy strings by using approximated string matching. Use with caution.}
 \usage{
 fuzzyClean(vector, distance, iterations)
 }
@@ -16,7 +16,7 @@ May also take a list as an argument as per agrep().}
 \item{iterations}{Number of itereations the function will do. A smart idea is to tune the function with low distance and high iterations.}
 }
 \description{
-Use clean fuzzy strings by using approximated string matching
+Use clean fuzzy strings by using approximated string matching. Use with caution.
 }
 \examples{
 df$Vector2 <- fuzzyClean(df$Vector1, 0.25, 5)
