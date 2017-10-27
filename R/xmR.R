@@ -13,7 +13,7 @@
 #'Long Runs - 8 consecutive points above or below the central line and after the initial 5 points. If a long run is present, then use the first 5 points to recalculathe new bounds, after which these points are never to be used again. These newly calculated bounds begin at the first point in the long run and extend to the end of the chart, unless re-calculated after the end of the run. If the long run is longer than 8 points, it should still be enveloped by the bounds of normal variation to be re-calculated.
 #'
 #'
-#'Short Runs - 3 of 4 points that are closer to either bound than they are to the central line and after the initial 5 points. If a short run is made by points not previously used in a calculation, then use those points to calculate new bounds and exclude them from any further calculations. A single point may be used in two calculations if Like long runs, these newly calculated bounds begin at the first point in the short run, and extend to the end of the chart unless re-calculated after the end of the run.
+#'Short Runs - 3 of 4 points that are closer to either bound than they are to the central line and after the initial 5 points. Newly calculated bounds begin at the first point in the short run, and extend to the end of the chart unless re-calculated after the end of the run.
 #'
 #'@examples 
 #'
