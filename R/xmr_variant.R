@@ -1,5 +1,5 @@
 #'Generate the XMR data for any time-series data.
-#'@description Will be used to calculate XMR data using the "wecca" rules. 
+#'@description Will be used to calculate XMR data using the "weco" rules. 
 #'
 #'@param df The dataframe containing the time-series data. 
 #'Must be in tidy format.
