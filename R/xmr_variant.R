@@ -40,6 +40,8 @@ xmR_variant <- function(df, measure, interval, recalc, testing) {
     z*posneg
   }
   
+  message("xmR_variant() is an unstable function.")
+  
   interval <- round2(interval, 0)
   df$Order <- seq(1, nrow(df), 1)
   points <- seq(1,interval,1)
