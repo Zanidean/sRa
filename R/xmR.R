@@ -7,7 +7,9 @@
 #'@param measure The column containing the measure. Must be in numeric format.
 #'@param interval The interval you'd like to use to calculate the averages. 
 #'Defaults to 5.
-#'@param recalc Logical if you'd like it to recalculate bounds. Defaults to False
+#'@param recalc Logical: if you'd like it to recalculate bounds. Defaults to False
+#'@param reuse Logical: Should points be re-used in calculations? Defaults to False
+
 #'
 #'@param rules
 #'Long Runs - 8 consecutive points above or below the central line and after the initial 5 points. If a long run is present, then use the first 5 points to recalculate the new bounds, after which these points are never to be used again.
@@ -25,11 +27,12 @@
 #'xmR_chart(., "Time", "Measure", "Facet")
 #'
 #'@export xmR
-xmR <- function(df, measure, interval, recalc, testing) {
+xmR <- function(df, measure, interval, recalc, reuse, testing) {
   
   if (missing(interval)) {interval <- 5}
   if (missing(recalc)) {recalc <- F}
   if (missing(testing)) {testing <- F}
+  if (missing(reuse)){reuse <- T}
   
   round2 <- function(x, n) {
     posneg = sign(x)
@@ -163,7 +166,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
   }
   
   #recalculator
-  recalculator <- function(dat, subset, order, length, message){
+  recalculator <- function(dat, subset, order, length, message, reuse){
     if(length == 8){
       int <- 5
       subset$Test <- 1
@@ -200,7 +203,11 @@ xmR <- function(df, measure, interval, recalc, testing) {
         dat$`Central Line`[start:lastrow] <- new_cnt
         dat <- limits(dat)
         calcpoints <- start:end
-        #points <- c(points, calcpoints)
+        
+        if(reuse == F){
+          points <- c(points, calcpoints)
+          }
+      
         #points <- c(min(points):max(points))
         assign("points", points, envir = parent.frame())
         assign("calcpoints", calcpoints, envir = parent.frame())
@@ -226,7 +233,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
        rep <- nrow(dat_sub)
        while(rep >= l){
          mess <- paste0(run, ": ", side)
-         dat <- recalculator(dat, dat_sub, "Order", l, mess)
+         dat <- recalculator(dat, dat_sub, "Order", l, mess, reuse)
          assign("points", points, envir = parent.frame())
          if(testing == T){
            print(mess) 
@@ -252,7 +259,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
       rep <- nrow(dat_sub)
       while(rep >= l){
         mess <- paste0(run, ": ", side)
-        dat <- recalculator(dat, dat_sub, "Order", l, mess)
+        dat <- recalculator(dat, dat_sub, "Order", l, mess, reuse)
         assign("points", points, envir = parent.frame())
         if(testing == T){
           print(mess) 
@@ -276,7 +283,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
       rep <- nrow(dat_sub)
       while(!is.null(rep) && !is.na(rep)){
         mess <- paste0(run, ": ", side)
-        dat <- recalculator(dat, dat_sub, "Order", l, mess)
+        dat <- recalculator(dat, dat_sub, "Order", l, mess, reuse)
         assign("points", points, envir = parent.frame())
         if(testing == T){
           print(mess) 
@@ -302,7 +309,7 @@ xmR <- function(df, measure, interval, recalc, testing) {
       rep <- nrow(dat_sub)
       while(!is.null(rep) && !is.na(rep)){
         mess <- paste0(run, ": ", side)
-        dat <- recalculator(dat, dat_sub, "Order", l, mess)
+        dat <- recalculator(dat, dat_sub, "Order", l, mess, reuse)
         assign("points", points, envir = parent.frame())
         if(testing == T){
           print(mess) 

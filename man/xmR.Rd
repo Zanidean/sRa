@@ -4,7 +4,7 @@
 \alias{xmR}
 \title{Generate the XMR data for any time-series data.}
 \usage{
-xmR(df, measure, interval, recalc, testing)
+xmR(df, measure, interval, recalc, reuse, testing)
 }
 \arguments{
 \item{df}{The dataframe containing the time-series data. 
@@ -16,7 +16,9 @@ At least 1 variable for time and one variable for measure.}
 \item{interval}{The interval you'd like to use to calculate the averages. 
 Defaults to 5.}
 
-\item{recalc}{Logical if you'd like it to recalculate bounds. Defaults to False}
+\item{recalc}{Logical: if you'd like it to recalculate bounds. Defaults to False}
+
+\item{reuse}{Logical: Should points be re-used in calculations? Defaults to False}
 
 \item{rules}{Long Runs - 8 consecutive points above or below the central line and after the initial 5 points. If a long run is present, then use the first 5 points to recalculate the new bounds, after which these points are never to be used again.
 
