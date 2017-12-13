@@ -4,7 +4,7 @@
 \alias{xmR}
 \title{Generate the XMR data for any time-series data.}
 \usage{
-xmR(df, measure, interval, recalc, reuse, testing, test_longrun, test_shortrun)
+xmR(df, measure, interval, recalc, reuse, testing, longrun, shortrun)
 }
 \arguments{
 \item{df}{The dataframe containing the time-series data. 
@@ -20,9 +20,9 @@ Defaults to 5.}
 
 \item{reuse}{Logical: Should points be re-used in calculations? Defaults to False}
 
-\item{test_longrun}{Vector of 2 to determine rules for long run. First point is the 'n' of points used to recalculate with, and the second is to determine what qualifies as a long run. Default is c(5,8) which uses the first 5 points of a run of 8 to recalculate the bounds.}
+\item{longrun}{Vector of 2 to determine rules for long run. First point is the 'n' of points used to recalculate with, and the second is to determine what qualifies as a long run. Default is c(5,8) which uses the first 5 points of a run of 8 to recalculate the bounds.}
 
-\item{test_shortrun}{Vector of 2 to determine rules for a short run. The first point is the minimium number of points within the set to qualify a shortrun, and the second is the length of a possible set. Default is c(3,4) which states that 3 of 4 points need to pass the test to be used in a calculation.}
+\item{shortrun}{Vector of 2 to determine rules for a short run. The first point is the minimium number of points within the set to qualify a shortrun, and the second is the length of a possible set. Default is c(3,4) which states that 3 of 4 points need to pass the test to be used in a calculation.}
 
 \item{rules}{Long Runs - Consecutive points above or below the central line and after the initializing point. If a long run is present, then use the first n points to recalculate the new bounds, after which these points are never to be used again.
 
