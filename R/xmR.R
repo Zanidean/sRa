@@ -46,6 +46,12 @@ xmR <- function(df, measure, interval, recalc, reuse, testing, test_longrun, tes
   if (missing(test_shortrun)){
     test_shortrun <- c(3, 4)
   }
+  if (test_longrun[1] > test_longrun[2]){
+    message("Invalid test_longrun argument. First digit must be less than or equal to the second.")
+  }
+  if (test_shortrun[1] > test_shortrun[2]){
+    message("Invalid test_shortrun argument. First digit must be less than or equal to the second.")
+  }
   
   
   round2 <- function(x, n) {
