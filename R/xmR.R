@@ -9,13 +9,13 @@
 #'Defaults to 5.
 #'@param recalc Logical: if you'd like it to recalculate bounds. Defaults to False
 #'@param reuse Logical: Should points be re-used in calculations? Defaults to False
-
-#'
+#'@param test_longrun Vector of 2 to determine rules for long run. First point is the 'n' of points used to recalculate with, and the second is to determine what qualifies as a long run. Default is c(5,8) which uses the first 5 points of a run of 8 to recalculate the bounds. 
+#'@param test_shortrun Vector of 2 to determine rules for a short run. The first point is the minimium number of points within the set to qualify a shortrun, and the second is the length of a possible set. Default is c(3,4) which states that 3 of 4 points need to pass the test to be used in a calculation. 
 #'@param rules
-#'Long Runs - 8 consecutive points above or below the central line and after the initial 5 points. If a long run is present, then use the first 5 points to recalculate the new bounds, after which these points are never to be used again.
+#'Long Runs - Consecutive points above or below the central line and after the initializing point. If a long run is present, then use the first n points to recalculate the new bounds, after which these points are never to be used again.
 #'
 #'
-#'Short Runs - 3 of 4 points that are closer to either bound than they are to the central line and after the initial 5 points. Newly calculated bounds begin at the first point in the short run, and extend to the end of the chart unless re-calculated after the end of the run.
+#'Short Runs -  Points that are closer to either bound than they are to the central line and after the initializng points. Newly calculated bounds begin at the first point in the short run, and extend to the end of the chart unless re-calculated after the end of the run.
 #'
 #'@examples 
 #'
@@ -27,7 +27,7 @@
 #'xmR_chart(., "Time", "Measure", "Facet")
 #'
 #'@export xmR
-xmR <- function(df, measure, interval, recalc, reuse, testing) {
+xmR <- function(df, measure, interval, recalc, reuse, testing, test_longrun, test_shortrun) {
   if (missing(interval)){
     interval <- 5
     }
@@ -39,7 +39,15 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
     }
   if (missing(reuse)){
     reuse <- T
-    }
+  }
+  if (missing(test_longrun)){
+    test_longrun <- c(5, 8)
+  }
+  if (missing(test_shortrun)){
+    test_shortrun <- c(3, 4)
+  }
+  
+  
   round2 <- function(x, n) {
     posneg <- sign(x)
     z <- abs(x) * 10 ^ n
@@ -105,11 +113,11 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
     int <- int
     subsets <- c()
     value <- "1"
-    run <- 4
-    percentage <- run * .75
+    run <- test_shortrun[2]
+    percentage <- run * (test_shortrun[1]/test_shortrun[2])
 
     for (i in int:nrow(df)){
-      pnts <- i:(i + 3)
+      pnts <- i:(i + test_shortrun[1])
       q <- df[[test]][df[[order]] %in% pnts]
       r <- as.data.frame(table(q))
       if (!any(is.na(q) == T) && (value %in% r$q)){
@@ -121,7 +129,7 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
         }
       }
     }
-    return(subsets[1:4, ])
+    return(subsets[1:(test_shortrun[2]), ])
   }
   run_subset <- function(subset, order, df, type, side, points){
     if (missing(type)){
@@ -166,22 +174,22 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
   }
   #recalculator
   recalculator <- function(dat, subset, order, length, message, reuse){
-    if (length == 8){
-      int <- 5
+    if (length == test_longrun[2]){
+      int <- test_longrun[1]
       subset$Test <- 1
-      } else if (length == 4){
-      int <- 4
+      } else if (length == test_shortrun[2]){
+      int <- test_shortrun[2]
       }
     if (nrow(subset) >= length){
       start <- min(subset[[order]], na.rm = T)
-      if (length == 8){
-        end <- start + 4
+      if (length == test_longrun[2]){
+        end <- start + (int-1)
         }
-      else if (length == 4){
-        end <- start + 3
+      else if (length == test_shortrun[2]){
+        end <- start + (int-1)
         }
       lastrow <- max(dat[[order]], na.rm = T)
-       if (length == 8){
+       if (length == test_longrun[2]){
         new_cnt <- mean(subset[[measure]][1:int], na.rm = T)
         new_mv_rng <- subset$`Moving Range`[1:int]
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
@@ -193,9 +201,9 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
         assign("points", points, envir = parent.frame())
         assign("calcpoints", calcpoints, envir = parent.frame())
         return(dat)
-      } else if (length == 4){
+      } else if (length == test_shortrun[2]){
         new_cnt <- mean(subset[[measure]][subset$Test == 1], na.rm = T)
-        new_mv_rng <- subset$`Moving Range`
+        new_mv_rng <- subset$`Moving Range`[subset$Test == 1]
         new_av_mv_rng <- mean(new_mv_rng, na.rm = T)
         start <- min(subset[[order]][subset$Test == 1], na.rm = T)
         end <- max(subset[[order]][subset$Test == 1], na.rm = T)
@@ -216,12 +224,14 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
       }
   }
   #runs application
-  runs <- function(dat, run = c("short", "long"), side = c("upper", "lower")){
+  runs <- function(dat, run = c("short", "long"), 
+                   side = c("upper", "lower"), 
+                   test_longrun, test_shortrun){
     if (run == "short"){
-      l <- 4
+      l <- test_shortrun[2]
     } else if (run == "long"){
-      l <- 8
-      }
+      l <- test_longrun[2]
+    }
     #upper longruns
     if (side == "upper" && run == "long"){
        dat_sub <- dat %>%
@@ -329,28 +339,33 @@ xmR <- function(df, measure, interval, recalc, reuse, testing) {
     if (recalc == T){
     #calculate inital values
       df <- starter(df)
-      df <- runs(df, "short", "upper")
-      df <- runs(df, "short", "lower")
-      df <- runs(df, "short", "upper")
-      df <- runs(df, "short", "lower")
-      df <- runs(df, "long", "upper")
-      df <- runs(df, "long", "lower")
-      df <- runs(df, "short", "upper")
-      df <- runs(df, "short", "lower")
-      df <- runs(df, "long", "upper")
-      df <- runs(df, "long", "lower")
-      df <- runs(df, "short", "upper")
-      df <- runs(df, "short", "lower")
-      df <- runs(df, "long", "upper")
-      df <- runs(df, "long", "lower")
+      df <- runs(df, "short", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "short", "lower", test_longrun, test_shortrun)
+      df <- runs(df, "short", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "short", "lower", test_longrun, test_shortrun)
+      df <- runs(df, "long", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "long", "lower", test_longrun, test_shortrun)
+      df <- runs(df, "short", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "short", "lower", test_longrun, test_shortrun)
+      df <- runs(df, "long", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "long", "lower", test_longrun, test_shortrun)
+      df <- runs(df, "short", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "short", "lower", test_longrun, test_shortrun)
+      df <- runs(df, "long", "upper", test_longrun, test_shortrun)
+      df <- runs(df, "long", "lower", test_longrun, test_shortrun)
       df <- limits(df)
     }
     lastpoint <- max(df$Order)
-    df$`Central Line`[c( (lastpoint - 2) : lastpoint)] <-
-      df$`Central Line`[c(lastpoint - 2)]
-    df$`Average Moving Range`[c( (lastpoint - 2) : lastpoint)] <-
-      df$`Average Moving Range`[c(lastpoint - 2)]
+
+    penpoint <- test_shortrun[1]-1
+
+    df$`Central Line`[c((lastpoint - penpoint) : lastpoint)] <-
+      df$`Central Line`[c(lastpoint - penpoint)]
+    df$`Average Moving Range`[c((lastpoint - penpoint) : lastpoint)] <-
+      df$`Average Moving Range`[c(lastpoint - penpoint)]
     df <- limits(df)
+    
+    
     #rounding
     df$`Central Line` <- round2(df$`Central Line`, 3)
     df$`Moving Range` <- round2(df$`Moving Range`, 3)
