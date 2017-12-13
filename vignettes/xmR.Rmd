@@ -22,9 +22,9 @@ Take careful thought about *what* you are trying to measure with XMR. Proportion
 
 The arguments for `xmR()` are as follows. 
 
-- **df**: The dataframe containing the time-series data. At least 1 variable for time and one variable for measure.
+- **df**: The dataframe containing the time-series data.
 
-- **measure**: The column containing the measure. Must be in a numeric format.
+- **measure**: The column containing the measure. This must be in a numeric format.
 
 - **interval**: The interval you'd like to use to calculate the averages. Defaults to 5.
 
@@ -46,7 +46,7 @@ example_data <- data.frame(Time, Measure)
 knitr::kable(example_data, format = "markdown", align = 'c')
 ```
 
-The function use on this set of data would be written like this if we wanted the boundries to recalculate. 
+The function use on this set of data would be written like this if we wanted the boundaries to recalculate. 
 
 ```{r, message=FALSE, eval = F}
 xmr_data <- xmR(df = example_data, measure = "Measure", recalc = T)
@@ -66,9 +66,9 @@ knitr::kable(xmr_data, format = "markdown", align = 'c')
 
 # Charts
 
-That data calculation is handy, but what about visualiztion?
+That data calculation is handy, the output can be saved and used in other applications. But what about visualization within R?
 
-There is a function called `xmR_chart()` which takes that output, and generates a ggplot graphic so the user can identify trends in the data. 
+There is a function called `xmR_chart()` which takes that output, and generates a ggplot graphic so the user can identify trends in the data. This works well for reporting, but it also works great for quick diagnostics of your data.
 
 The arguments for `xmR_chart()` are as follows. 
 
@@ -87,7 +87,7 @@ xmR_chart(dataframe = xmr_data, time = "Time", measure = "Measure")
 
 -------
 
-# Other Packages
+# Tidyverse
 
 Simple datasets like those illustrated above are common, but more common are large datasets with multiple factors. Consider the following data. How would the `xmR()` function benefit the user in this case? 
 
@@ -144,7 +144,7 @@ xmR_chart(dataframe = FD,
   scale_x_discrete(breaks = scales::pretty_breaks(5))
 ```
 
-Or alternatively, we could use the built-in ggplot2 function for more complex faceting.
+Alternatively, you could use the built-in ggplot2 function for more complex faceting.
 
 ```{r, fig.height=5, fig.width=7.5}
 xmR_chart(dataframe = FD, 
