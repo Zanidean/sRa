@@ -20,7 +20,7 @@ Take careful thought about *what* you are trying to measure with XMR. Proportion
 
 #Arguments
 
-The arguments for `xmR()` are as follows. 
+The arguments for `xmR()` are: 
 
 - **df**: The dataframe containing the time-series data.
 
@@ -32,6 +32,9 @@ The arguments for `xmR()` are as follows.
 
 - **reuse**: Logical: Should points be re-used in calculations? Defaults to False.
 
+- **longrun**: Vector of 2 to determine rules for long run. First point is the 'n' of points used to recalculate with, and the second is to determine how many consecutive points are needed to define a longrun. Default is c(5,8) which uses the first 5 points of a run of 8 to recalculate the bounds. 
+
+- **shortrun**: Vector of 2 to determine rules for a short run. The first point is the minimum number of points within the set to qualify a shortrun, and the second is the length of a possible set. Default is c(3,4) which states that 3 of 4 consecutive points need to pass the test to be used in a calculation. 
 
 The data required for XMR charts take a specific format, with at least two columns of data - one for the time variable and another for the measurement. Like so:
 
@@ -56,12 +59,23 @@ The measure column must be written within quotes.
 
 Output data looks like this:
 ```{r, echo=F, message=FALSE}
-xmr_data <- xmR(df = example_data, 
-                measure = "Measure", 
+xmr_data <- xmR(example_data, "Measure", 
                 recalc = T) %>% 
   select(-Order)
 knitr::kable(xmr_data, format = "markdown", align = 'c')
 ```
+
+The only mandatory arguments are 'df', because the function needs to operate on a dataframe, and 'measure' because the function needs to be told which column contains the measurements. Everything else has been set to what I believe is a safe and sensible default, with no single default overriding any other. 
+
+In our shop, we typically run the following:
+
+```{r, message = FALSE}
+xmr_data <- xmR(df = example_data, measure = "Measure", recalc = T)
+```
+
+Which uses the recalculation function, along with the default shortrun and longrun definitions. Feel free to play around with your own definitions of what a shortrun or longrun is. The differences between rules is slight, but each user will have different needs. It is important to use consistent definitions of what a long/short run are however, it wouldn't be entirely appropriate in one report to use one set of definitions for one dataset, and another set for a different dataset.
+
+
 -------
 
 # Charts
