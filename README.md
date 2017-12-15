@@ -1,21 +1,26 @@
-Overview
+#NO LONGER MAINTAINED 
+##REFER TO NEW REPO [OFFICIAL PACKAGE](https://github.com/Zanidean/xmrr) OR [CRAN](https://cran.r-project.org/web/packages/xmrr/)
+
+
+~~Overview~~
 ---------
 
-sRa is a package designed to speed-up institutional research by providing a set of generalized functions for common tasks:
+~~sRa is a package designed to speed-up institutional research by providing a set of generalized functions for common tasks:~~
 
-- `xmR()`: [Generates XMR data.](https://sramhc.shinyapps.io/xmrbuilder/)
+~~- `xmR()`: [Generates XMR data.](https://sramhc.shinyapps.io/xmrbuilder/)~~
 
-- `xmR_chart()`: Takes the output from xmR and makes an XMR chart, mostly used for diagnostics.
+~~- `xmR_chart()`: Takes the output from xmR and makes an XMR chart, mostly used for diagnostics.~~
 
-- `fuzzyClean()`: Uses approximate string matching to fix typos and slight differences in vectors.
+~~- `fuzzyClean()`: Uses approximate string matching to fix typos and slight differences in vectors.~~
 
-- `sdi()`: Simpson Diversity Index calculator.
+~~- `sdi()`: Simpson Diversity Index calculator.~~
 
-- `foip()`: For making sure your data is foip'd.
+~~- `foip()`: For making sure your data is foip'd.~~
 
-Installation
+~~Installation~~
 ------------
-``` R
-install.packages(devtools)
-devtools::install_github("zanidean/sRa")
-```
+~~``` R
+install.packages(devtools)~~
+~~devtools::install_github("zanidean/sRa")
+```~~
+
